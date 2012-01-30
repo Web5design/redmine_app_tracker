@@ -4,7 +4,7 @@ class CreateJobs < ActiveRecord::Migration
       t.integer :apptracker_id
       t.string :category 
       t.string :title 
-      t.string :description 
+      t.text :description 
       t.integer :positions_available
       t.string :application_followup_message
       t.integer :application_material_count
@@ -13,6 +13,7 @@ class CreateJobs < ActiveRecord::Migration
       t.string :attachment_ids
       t.string :referrer_count
       t.string :status
+      t.datetime :submission_date
 
       t.timestamps
     end

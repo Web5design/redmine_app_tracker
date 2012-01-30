@@ -1,0 +1,9 @@
+<h3>Add New Custom Fields</h3>
+    <% labelled_tabular_form_for :custom_field, custom_field, :url => { :action => "create_custom_field", :id => job } do |f| %>
+	  <div class="new-custom-property">
+
+	  <%= render :partial => 'new_custom_field_form', :locals => { :f => f } %>
+      <%= hidden_field_tag 'type', custom_field.type %>
+	  </div>
+	  <div class="submit-new-field"><%= submit_tag 'Add Field' %></div>
+    <% end %>

@@ -1,1 +1,83 @@
-<h2>JobApplications#edit</h2>
+<script>
+document.observe("dom:loaded", function() {
+	$$('input[name="attachments[1][file]"]').each(function(elem, i){ $(elem).writeAttribute('name', 'attachments[' + (i + 1) + '][file]').next('label.inline').remove(); });
+});
+</script>
+
+<% flash[:notice] %>
+<div class="contextual">
+  <%= link_to 'Back', jobs_url(:apptracker_id => params[:apptracker_id]), :class => 'icon icon-history' %>
+</div>
+
+<h2><%=h Apptracker.find(@job_application.apptracker_id).title %>: <%=h Job.find(@job_application.job_id).title %> </h2>
+
+<%= render :partial => "shared/tabs" %>
+<span class="required">*</span> Required Fields
+<%= render :partial => 'applicant_info', :locals => { :applicant => @applicant, :apptracker_id => params[:apptracker_id] } %>
+<br /><br />
+<% form_for(@job_application, :html => {:multipart => true}) do |f| %>
+  <%= f.error_messages %>
+  <%= f.hidden_field(:apptracker_id, :value => @apptracker.id ) %>
+  <%= f.hidden_field(:applicant_id, :value => @applicant.id ) %>
+  <%= f.hidden_field(:job_id, :value => @job.id ) %>
+  
+  <p><%= render :partial => 'list_job_custom_fields', :locals => { :job => @job, :job_application => @job_application } %></p>
+  
+  <br />
+  <h3>Job Application Materials</h3>
+    <% unless @job_application_materials.nil? || @job_application_materials.empty? %>
+	  <h4>Existing</h4>
+	  <% @job_application_materials.each do |jam| %>
+	    <%= link_to_attachments jam %><br />
+	  <% end %>  
+	<% else %>
+	  No attachments.
+	  <% @job_application.job_application_materials.build() %>
+	<% end %>
+	
+    <% unless @job.application_material_types.nil? || @job.application_material_types.empty? %>	
+	  <% @job.application_material_types.split(',').each do |amt| %>
+		<h4><%=h amt %></h4>
+
+	    <% f.fields_for :job_application_materials do |jam| %>
+		  <%= jam.hidden_field(:job_application_id, :value => @job_application.id ) %>
+		  <div class="box">
+			<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
+		  </div>
+	    <% end %>
+	  <% end %>
+	<% end %>
+
+	<% unless @job.referrer_count.nil? || @job.referrer_count == "0" %>
+	  <h4>Referrals (<%= @job.referrer_count %> required)</h4>
+	  <%= label_tag :email, "Please enter referrer's email(s) separated by a comma:" %><br />
+	  <%= text_field_tag :email %><br />
+	<% end %>
+	
+  <% if(User.current.admin?)%>
+    <h3>Job Application Status</h3>
+	<p>
+      <%= f.label(:submission_status) %><span class="required">*</span><br />
+      <%= f.select(:submission_status, JobApplication::SUBMISSION_STATUS, {:include_blank => false}) %>
+    </p>
+
+	<p>
+      <%= f.label(:acceptance_status) %><span class="required">*</span><br />
+      <%= f.select(:acceptance_status, JobApplication::ACCEPTANCE_STATUS, {:include_blank => false}) %>
+    </p>
+
+	<h3>Admin Notes</h3>
+	<p>
+      <%= f.label(:notes) %><br />
+      <%= f.text_area(:notes) %>
+    </p>
+  <% end %>	
+  
+  <br /><br />
+  <p>
+	<strong>You have edited your application materials for this position. By clicking on this button, you are saving the new edits.</strong>
+	<br /><br />
+    <%= f.submit('Save Edits') %>
+  </p>
+<% end %>
+

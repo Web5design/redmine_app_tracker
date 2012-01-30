@@ -1,48 +1,100 @@
-<table class="list">
-<thead>
-  <tr>
-    <% if(User.current.admin?)%>
-      <!-- Admin Role -->
-      <th style="width:50%; text-align:left;">Name</th>
-      <th style="width:40%; text-align:left;">User Name</th>
-      <th style="width:5%; text-align:left;"></th>
-      <th style="width:5%; text-align:left;"></th>
+<% if @job_applications.nil? || @job_applications.empty? %>
+  no applications yet!
+<% else %>
+	<table class="list">
+	<thead>
+	  <tr>
+	    <% if(User.current.admin?)%>
+	      <!-- Admin Role -->
+		  <% if box %>
+		    <th style="width:10%; text-align:left;">Zip</th>
+		  <% end %>
+		  <%= sort_header_tag('id', :caption => 'Application ID') %>
+		  <th style="width:10%; text-align:left;">Job</th>
+	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
+		  <%= sort_header_tag('created_at', :caption => 'Date Submitted') %>
+		  <%= sort_header_tag('created_at', :caption => 'Deadline') %>
+		  <%= sort_header_tag('submission_status', :caption => 'Submission Status') %>
+		  <%= sort_header_tag('acceptance_status', :caption => 'Acceptance Status') %>
+		  <!--
+		  <th style="width:5%; text-align:left;">Referrals Required</th>
+		  <th style="width:5%; text-align:left;">Referrals Received</th>
+		  -->
+		  <th style="width:5%; text-align:left;">Admin Notes</th>
+		  <th style="width:5%; text-align:left;"></th>
+		  <th style="width:5%; text-align:left;"></th>
 
-    <% elsif (User.current.logged?)%>
-      <!-- Applicant Role -->
+	    <% elsif (User.current.logged?)%>
+	      <!-- Applicant Role -->
+		  <th style="width:10%; text-align:left;">Job</th>
+	      <th style="width:10%; text-align:left;">Date Submitted</th>
+	      <th style="width:10%; text-align:left;">Deadline</th>
+	      <th style="width:5%; text-align:left;">Submission Status</th>
+	      <!--
+		  <th style="width:5%; text-align:left;">Referrals Required</th>
+	      <th style="width:5%; text-align:left;">Referrals Received</th>
+		  -->
+		  <th style="width:5%; text-align:left;"></th>
+		  <th style="width:5%; text-align:left;"></th>
+		  <th style="width:5%; text-align:left;"></th>
+	    <% else %>
+	      <!-- Anonymous Role -->
+	      <!-- No view for Anonymous -->
 
-    <% else %>
-      <!-- Anonymous Role -->
-      <!-- No view for Anonymous -->
+	    <% end %> 
+	  </tr>
+	</thead>
+	<tbody>
+	  <% if (User.current.admin?)%>	
+	    <% if box %>
+          <%= check_box_tag('check_all', 'check_all', false,  :onClick => "$$('#applicant_form input.check').each(function(box){box.checked=($('check_all').checked)?true:false});")%> Select All <br /><br />
+	    <% end %>
+	  <% end %>
+  	  <% @job_applications.each do |ja| %>
+        <tr>
+        <% if(User.current.admin?)%>
+          <!-- Admin Role -->
+          <% if box %>
+		    <td style="width:10%"><%= check_box_tag ("applicants_to_zip[]", ja.id, false, :class => 'check') %></td>
+		  <% end %>
+		  <td style="width:10%"><%= link_to "#{ja.id}", job_application_url(ja.id, :apptracker_id => ja.apptracker_id) %></td>
+		  <td style="width:10%"><%= link_to "#{ja.job.title}", job_url(ja.job.id, :apptracker_id => ja.apptracker_id) %></td>
+          <td style="width:10%"><%= link_to "#{ja.applicant.first_name} #{ja.applicant.last_name}", applicant_url(ja.applicant.id, :apptracker_id => ja.apptracker_id) %></td>
+          <td style="width:10%"><%= ja.created_at.month %>/<%= ja.created_at.day %>/<%= ja.created_at.year %> <%= ja.created_at.strftime("%I:%M %p") %></td>
+		  <td style="width:10%"><%= ja.job.submission_date.month %>/<%= ja.job.submission_date.day %>/<%= ja.job.submission_date.year %> <%= ja.job.submission_date.strftime("%I:%M %p") %></td>
+		  <td style="width:10%"><%= ja.submission_status %></td>
+		  <td style="width:10%"><%= ja.acceptance_status %></td>
+ 		  <td style="width:5%"><%= ja.notes.nil? || ja.notes.blank? ? 'No' : 'Yes' %></td>
+		  <td style="width:5%"><%= link_to 'Edit', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
+          <td style="width:5%"><%= link_to 'Delete', job_application_url(:id => ja.id), 
+            :confirm => "Are you sure you want to delete #{ja.applicant.first_name} #{ja.applicant.last_name}\'s record?", 
+            :method => :delete,
+            :class => 'icon icon-del' %>
+          </td>
 
-    <% end %> 
-  </tr>
-</thead>
-<tbody>
-  <% @applicants.each do |applicant| %>
-    <tr>
-      <% if(User.current.admin?)%>
-        <!-- Admin Role -->
-        <td style="width:50%"><%= link_to "#{applicant.first_name} #{applicant.last_name}", applicant_url(applicant.id, :apptracker_id => params[:apptracker_id]) %></a></td>
-      <td style="width:40%"><%=h applicant.user_name%></a></td>
-      <td style="width:5%"><%= link_to 'Edit', edit_applicant_url(applicant.id), :class => 'icon icon-edit' %></td>
-      <td style="width:5%"><%= link_to 'Delete', applicant_url(:id => applicant.id), 
-        :confirm => "Are you sure you want to delete #{applicant.first_name} #{applicant.last_name}\'s record?", 
-        :method => :delete,
-        :class => 'icon icon-del' %>
-      </td>
+        <% elsif (User.current.logged?)%>
+          <!-- Applicant Role -->
+		  <td style="width:10%"><%= link_to "#{ja.job.title}", job_url(ja.job.id, :apptracker_id => ja.apptracker_id) %></td>
+		  <td style="width:10%"><%= ja.created_at.month %>/<%= ja.created_at.day %>/<%= ja.created_at.year %> <%= ja.created_at.strftime("%I:%M %p") %></td>
+		  <td style="width:10%"><%= ja.job.submission_date.month %>/<%= ja.job.submission_date.day %>/<%= ja.job.submission_date.year %> <%= ja.job.submission_date.strftime("%I:%M %p") %></td>
+		  <td style="width:10%"><%= ja.submission_status %></td>
+		  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
+		  <% if ja.job.submission_date > DateTime.now %>
+		    <td style="width:5%"><%= link_to 'Edit', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
+            <td style="width:5%"><%= link_to 'Delete', job_application_url(:id => ja.id), 
+              :confirm => "Are you sure you want to delete #{ja.applicant.first_name} #{ja.applicant.last_name}\'s record?", 
+              :method => :delete,
+              :class => 'icon icon-del' %>
+		  <% end %>
 
-      <% elsif (User.current.logged?)%>
-        <!-- Applicant Role -->
-        <!-- No view for Applicants -->
-
-      <% else %>
-        <!-- Anonymous Role -->
-        <!-- No view for Anonymous -->
-
-      <% end %> 
-    </tr>
-  <% end %>
+        <% else %>
+          <!-- Anonymous Role -->
+          <!-- No view for Anonymous -->
+		  If you are not logged in, you can not view any applications you have previously submitted.
+        <% end %> 
+        </tr>
+      <% end %>
+    <% end %>
 </tbody>
 </table>
 

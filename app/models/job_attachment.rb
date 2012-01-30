@@ -13,5 +13,27 @@ class JobAttachment < ActiveRecord::Base
   validates_uniqueness_of :filename
 
   # constants
+  
+  def attachments_deletable?(usr=User.current)
+    if User.current.admin?
+      true
+    else
+      false
+    end  
+  end
+  
+  def project
+    self.job.apptracker.project
+  end
+  
+  def visible?(user=User.current)
+    #!user.nil? && user.allowed_to?(:view_documents, project)
+    true
+  end
+  
+  def attachments_visible?(user=User.current)
+    #user.allowed_to?(self.class.attachable_options[:view_permission], self.project)
+    true
+  end
  
 end
