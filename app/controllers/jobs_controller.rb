@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'zip/zipfilesystem'
+require 'csv'
 
 class JobsController < ApplicationController
   unloadable
@@ -459,5 +460,49 @@ class JobsController < ApplicationController
     else
       redirect_to(home_url)    
     end  
+  end
+  
+  
+  def export_to_csv
+    @job = Job.find(params[:job_id])
+    @applicants = @job.applicants
+    @job_applications = @job.job_applications
+    @file_name = @job.title.gsub(/ /, '-')
+    
+    @job_application_custom_fields = @job.all_job_app_custom_fields
+    @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @custom = []
+    unless @job_application_custom_fields.empty?
+  		@job_application_custom_fields.each do |custom_field|
+  		  @custom << custom_field.name
+  		end
+  	end
+  	@columns = @applicant_fields + @custom
+    
+    csv_string = FasterCSV.generate do |csv| 
+      # header row 
+      csv << @columns
+
+      # data rows 
+      @job_applications.each do |ja|
+        row = []
+        @applicant_fields.each do |af|
+          row << ja.applicant.send(af)
+        end
+        @custom.each do |c| 
+          ja.custom_values.each do |cv|
+            if cv.custom_field.name == c
+              row << show_value(cv)
+            end  
+          end
+        end  
+        csv << row
+      end 
+    end 
+
+    # send it to the browser
+    send_data csv_string, 
+            :type => 'text/csv; charset=iso-8859-1; header=present', 
+            :disposition => "attachment; filename=#{@file_name}-applicants.csv"
   end
 end

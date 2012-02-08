@@ -29,9 +29,18 @@ class ApplicantsController < ApplicationController
   def show 
     @apptracker = Apptracker.find(params[:apptracker_id])
     @applicant = Applicant.find(params[:id])
-	unless User.current.admin? || @applicant.email == User.current.mail
-		redirect_to('/') and return
-	end
+    @job_applications = @applicant.job_applications
+    
+    sort_init 'created_at', 'desc'
+    sort_update 'last_name' => "#{Applicant.table_name}.last_name",
+                'id' => "#{JobApplication.table_name}.id",
+                'submission_status' => "#{JobApplication.table_name}.submission_status",
+                'acceptance_status' => "#{JobApplication.table_name}.acceptance_status",
+                'created_at' => "#{JobApplication.table_name}.created_at"
+                
+	  unless User.current.admin? || @applicant.email == User.current.mail
+		  redirect_to('/') and return
+	  end
     # TODO uncomment this after job applications are implemented
     # @job_applications = @applicant.job_applications
 
@@ -72,7 +81,11 @@ class ApplicantsController < ApplicationController
     # find the applicant for editing
     @apptracker = Apptracker.find(params[:apptracker_id]) 
     @applicant = Applicant.find(params[:id])
-    @user = User.current
+    unless User.current.admin?
+      @user = User.current
+    else
+      @user = User.find(:first, :conditions => {:mail => @applicant.email})
+    end  
 	unless User.current.admin? || @applicant.email == User.current.mail
 		redirect_to('/') and return
 	end

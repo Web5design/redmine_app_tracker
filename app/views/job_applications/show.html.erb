@@ -6,9 +6,9 @@
 <%= render :partial => "shared/tabs" %>
 
 <p>	
-Applicant: <%= @applicant.first_name %> <%= @applicant.last_name %><br />
 Job Title: <%= link_to Job.find(@job_application.job_id).title, job_path(@job_application.job_id, :apptracker_id => @job_application.apptracker_id) %><br />
 
+<%= render :partial => 'applicant_info', :locals => { :applicant => @applicant } %>
 
   <h3>Additional Information</h3>
   <% @job_application.custom_values.each do |custom_value| %>
@@ -55,7 +55,7 @@ Job Title: <%= link_to Job.find(@job_application.job_id).title, job_path(@job_ap
 	<% end %>
 <% end %>
 
-<% if @job_application.job.submission_date > DateTime.now || User.current.admin? %>
+<% if (@job_application.job.submission_date > DateTime.now && User.current.mail == @applicant.email) || User.current.admin? %>
   <%= link_to 'Edit Application', edit_job_application_url(@job_application.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %>
 <% end %>
 <br /><br />

@@ -1,29 +1,28 @@
-<h3>Applicant Information</h3>
-<table>
-<tr>
-<td>
-<b>General Information</b>
-<p>
-Name: <%=h "#{@applicant.last_name}, #{@applicant.first_name}"%><br /> 
-User name: <%=h @applicant.user_name %><br /> 
-Email: <%=h @applicant.email %><br /> 
-Phone: <%=h @applicant.phone %> <br /> 
+<h3>Applicant Information - <%=h "#{@applicant.last_name}, #{@applicant.first_name}"%></h3>
+
+<div style="float: left; width: 20%;">
+	<b>General Information</b>
+	<p>
+	Name: <%=h "#{@applicant.last_name}, #{@applicant.first_name}"%><br /> 
+	User name: <%=h @applicant.user_name %><br /> 
+	Email: <%=h @applicant.email %><br /> 
+	Phone: <%=h @applicant.phone %> <br /> 
 </p>
-<br />
-</td>
-<td style="padding-left:20px;">
-<b>Address</b>
+
+</div>
+<div style="float: left; width: 80%;">
+	<b>Address</b>
+	<p>
+	Address 1: <%=h @applicant.address_1 %> <br /> 
+	Address 2: <%=h @applicant.address_2 %> <br /> 
+	City: <%=h @applicant.city %> <br /> 
+	State: <%=h @applicant.state %> <br /> 
+	Postal Code: <%=h @applicant.postal_code %> <br /> 
+	Country: <%=h @applicant.country %><br /> 
+	</p>
+</div>
+<% if User.current.mail == @applicant.email %>
 <p>
-Address 1: <%=h @applicant.address_1 %> <br /> 
-Address 2: <%=h @applicant.address_2 %> <br /> 
-City: <%=h @applicant.city %> <br /> 
-State: <%=h @applicant.state %> <br /> 
-Postal Code: <%=h @applicant.postal_code %> <br /> 
-Country: <%=h @applicant.country %><br /> 
+	<%= link_to 'Edit', edit_applicant_url(@applicant.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %>
 </p>
-</td>
-</tr>
-</table>
-<br />
-<%= link_to 'Edit', edit_applicant_url(@applicant.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %>
-<br />
+<% end %>
