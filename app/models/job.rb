@@ -21,11 +21,7 @@ class Job < ActiveRecord::Base
                         
   acts_as_customizable
   acts_as_attachable :delete_permission => :manage_documents
- 
-  # TODO if necessary, modify :reject_if code for more advanaced error checking
-  #accepts_nested_attributes_for :job_custom_fields, :allow_destroy => true
-  
-  #accepts_nested_attributes_for :job_application_custom_fields, :allow_destroy => true
+
   accepts_nested_attributes_for :job_attachments, :reject_if => proc { |attributes| attributes['document'].blank? }, :allow_destroy => true
 
   # validation

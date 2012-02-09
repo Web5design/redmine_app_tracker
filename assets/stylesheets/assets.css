@@ -121,6 +121,9 @@
 {
 	background: #507AAA url('/plugin_assets/redmine_asset_tracker/images/table-images/right.png') right -1px no-repeat;
 }
+th {
+	text-align:left;
+}
 #rounded-corner th
 {
 	padding: 8px;

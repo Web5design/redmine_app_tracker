@@ -34,9 +34,8 @@ class JobsController < ApplicationController
   # GET /jobs/1
   # GET job_url(:id => 1)
   def show
-    # secure the parent apptracker id and find requested job
-    @apptracker = Apptracker.find(params[:apptracker_id])
-    @job = @apptracker.jobs.find(params[:id])
+    @job = Job.find(params[:id])
+    @apptracker = @job.apptracker
     @zipped_file = params[:zipped_file]
     
     session[:auth_source_registration] = nil
@@ -502,7 +501,26 @@ class JobsController < ApplicationController
 
     # send it to the browser
     send_data csv_string, 
-            :type => 'text/csv; charset=iso-8859-1; header=present', 
+            :type => 'text/html; charset=iso-8859-1; header=present', 
             :disposition => "attachment; filename=#{@file_name}-applicants.csv"
   end
+  
+  def view_all
+    @job = Job.find(params[:job_id])
+    @apptracker = @job.apptracker
+    @applicants = @job.applicants
+    @job_applications = @job.job_applications
+    @file_name = @job.title.gsub(/ /, '-')
+    
+    @job_application_custom_fields = @job.all_job_app_custom_fields
+    @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @custom = []
+    unless @job_application_custom_fields.empty?
+  		@job_application_custom_fields.each do |custom_field|
+  		  @custom << custom_field.name
+  		end
+  	end
+  	@columns = @applicant_fields + @custom 
+  end
+  
 end

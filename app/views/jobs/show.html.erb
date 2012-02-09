@@ -82,7 +82,6 @@ function toggle2() {
     <%= submit_tag "Export To CSV" -%>
   <% end -%>
 
-
 <% elsif User.current.logged? %>
 <span class="access-account">
   <% @applicant = Applicant.find_by_email(User.current.mail) %>
