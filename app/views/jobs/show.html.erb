@@ -81,6 +81,7 @@ function toggle2() {
     <%= hidden_field_tag :job_id, @job.id %>
     <%= submit_tag "Export To CSV" -%>
   <% end -%>
+  <%= button_to "Filter Job Applications", filter_jobs_path(:job_id => @job.id) %>
 
 <% elsif User.current.logged? %>
 <span class="access-account">

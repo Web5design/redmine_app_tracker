@@ -505,13 +505,21 @@ class JobsController < ApplicationController
             :disposition => "attachment; filename=#{@file_name}-applicants.csv"
   end
   
-  def view_all
+  def filter
     @job = Job.find(params[:job_id])
-    @apptracker = @job.apptracker
-    @applicants = @job.applicants
-    @job_applications = @job.job_applications
-    @file_name = @job.title.gsub(/ /, '-')
+    unless params[:filter].nil?
+      @custom_fields = params[:filter][:custom_field_values]
+      @custom_values = []
+      @custom_fields.each_key do |field_id|
+        unless @custom_fields[field_id].nil? || @custom_fields[field_id].empty?
+          @custom_values += CustomValue.find(:all, :conditions => ["custom_field_id = ? and value like ?", field_id, "%#{@custom_fields[field_id]}%"])
+        end  
+      end
+      job_app_ids = @custom_values.collect {|x| x.customized_id}
+      @job_applications = JobApplication.find(:all, :conditions => ["job_id = ? and id in (?)", params[:job_id], job_app_ids])
+    end  
     
+    @job_application = JobApplication.new(:job => @job)
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
     @custom = []
@@ -521,6 +529,6 @@ class JobsController < ApplicationController
   		end
   	end
   	@columns = @applicant_fields + @custom 
-  end
+  end 
   
 end
