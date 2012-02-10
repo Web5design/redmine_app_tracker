@@ -21,6 +21,7 @@
 	<table class="list">
 	  <thead>
 	    <tr>
+		  <th style="text-align:left;"></th>
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
 		  <% end %>
@@ -29,6 +30,7 @@
 	  <tbody>
 		<% @job_applications.each do |ja| %>
 		<tr>
+		  <td><%= link_to "View", job_application_path(ja) %></td>	
 		  <% @applicant_fields.each do |af| %>
 	        <td><%= ja.applicant.send(af) %></td>
 	      <% end %>
