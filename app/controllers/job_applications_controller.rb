@@ -55,12 +55,12 @@ class JobApplicationsController < ApplicationController
     @job_application = JobApplication.find(params[:id])
     @applicant = @job_application.applicant
 
-	unless User.current.admin? || @applicant.email == User.current.mail
-	  flash[:error] = "You are not authorized to view this section."
-		redirect_to('/') and return
-	end
+  	unless User.current.admin? || @job_application.job.is_manager? || @applicant.email == User.current.mail
+  	  flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
     
-# note these two lines are NOT the same, one is job materials the other is job referrals
+    # note these two lines are NOT the same, one is job materials the other is job referrals
     @job_application_materials = @job_application.job_application_materials.find :all, :include => [:attachments]
     @job_application_referrals = @job_application.job_application_referrals.find :all, :include => [:attachments]
     
