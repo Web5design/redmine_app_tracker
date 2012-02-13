@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'zip/zipfilesystem'
 require 'csv'
+require 'tempfile'
 
 class JobsController < ApplicationController
   unloadable
@@ -231,8 +232,8 @@ class JobsController < ApplicationController
   		redirect_to('/') and return
   	end
     @material_types = @job.application_material_types.split(',')
-    @file_name = @job.title.gsub(/ /, '-')
-    @zip_file_path = "#{RAILS_ROOT}/public/uploads/#{@file_name}-materials.zip"
+    @file_name = @job.title.gsub(/[^a-zA-Z\d]/, '-')
+    @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-materials.zip"
     @ja_materials = Array.new
     @ja_referrals = Array.new
     filepaths = Array.new
@@ -267,11 +268,14 @@ class JobsController < ApplicationController
     end
     
     # check to see if the file exists already, and if it does, delete it.
-    if File.file?(@zip_file_path)
-      File.delete(@zip_file_path)
-    end
+    # if File.file?(@zip_file_path)
+    #       File.delete(@zip_file_path)
+    #     end
     
-    Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+    filename = "#{@file_name}-materials.zip"
+    file = Tempfile.new(filename)
+    
+    Zip::ZipOutputStream.open(file.path) do |zipfile|
       @applicants.each do |applicant|
         if zipfile.find_entry("#{applicant.last_name}_#{applicant.first_name}")
           zipfile.remove("#{applicant.last_name}_#{applicant.first_name}")
@@ -301,7 +305,7 @@ class JobsController < ApplicationController
           end    
         end
       end   
-
+    
       unless @ja_referrals.nil?
         @ja_referrals.each do |jar|
           jar.each do |ref|
@@ -328,9 +332,10 @@ class JobsController < ApplicationController
         end
       end
     end
-    
-    @zipped_file = "/uploads/#{@file_name}-materials.zip"
-    redirect_to job_path(@job, :apptracker_id => @job.apptracker_id, :zipped_file => @zipped_file)
+    send_file file.path, :type => 'application/zip', :disposition => 'attachment', :filename => filename
+    file.close 
+    #@zipped_file = "/uploads/#{@file_name}-materials.zip"
+    redirect_to job_path(@job, :apptracker_id => @job.apptracker_id)
     
   end
   
