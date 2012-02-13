@@ -273,6 +273,9 @@ class JobsController < ApplicationController
     
     Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
       @applicants.each do |applicant|
+        if File.file?("#{applicant.last_name}_#{applicant.first_name}")
+          File.delete("#{applicant.last_name}_#{applicant.first_name}")
+        end
         zipfile.mkdir("#{applicant.last_name}_#{applicant.first_name}")  
       end  
       
