@@ -1,9 +1,15 @@
 <% flash[:notice] %>
-<h2><%=h @job.apptracker.title %>: Jobs: <em><%= link_to @job.title, job_path(@job) %></em></h2>
+<div class="contextual">
+  <%= link_to 'Back', job_url(params[:job_id], :apptracker_id => params[:apptracker_id]), :class => 'icon icon-history' %>
+</div>
+<h2><%=h @job.apptracker.title %>: Jobs: <em><%= @job.title %></em></h2>
+
+<%= render :partial => "shared/tabs" %>
 
 <% form_tag({:controller => 'jobs', :action => 'filter'}) do %>
   <% job_fields = @job_application_custom_fields.collect {|x| x.id} %>
   <%= hidden_field_tag :job_id, @job.id %>
+  <%= hidden_field_tag :apptracker_id, @apptracker.id %>
   <% unless job_fields.nil? || job_fields.empty? %>
     <h3>Search Applications</h3>
     <% @job_application.custom_field_values.each do |value| %>

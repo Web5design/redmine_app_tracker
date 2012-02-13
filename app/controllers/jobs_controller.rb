@@ -4,7 +4,7 @@ require 'csv'
 
 class JobsController < ApplicationController
   unloadable
-  before_filter :require_admin, :except => [:index, :show, :register]
+  before_filter :require_admin, :except => [:index, :show, :register, :filter, :export_to_csv, :zip_some, :zip_all]
   #before_filter :authorize
   
   helper :attachments
@@ -24,7 +24,7 @@ class JobsController < ApplicationController
     
     # secure the parent apptracker id and find its jobs
     @apptracker = Apptracker.find(params[:apptracker_id])
-    if(User.current.admin?)
+    if(User.current.admin? || User.current.member_of?(@apptracker.project))
       @jobs = @apptracker.jobs.find(:all, :order => sort_clause)
     else
       @jobs = @apptracker.jobs.find(:all, :conditions => ["status = ? and submission_date > ?", Job::JOB_STATUS[0], DateTime.now], :order => sort_clause)
@@ -226,6 +226,10 @@ class JobsController < ApplicationController
   
   def zip_all
     @job = Job.find(params[:job])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
     @material_types = @job.application_material_types.split(',')
     @file_name = @job.title.gsub(/ /, '-')
     @zip_file_path = "#{RAILS_ROOT}/public/uploads/#{@file_name}-materials.zip"
@@ -329,6 +333,10 @@ class JobsController < ApplicationController
   
   def zip_some
     @job = Job.find(params[:job])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
     @material_types = params[:application_material_types]
     @file_name = @job.title.gsub(/ /, '-')
     @zip_file_path = "#{RAILS_ROOT}/public/uploads/#{@file_name}-materials.zip"
@@ -464,6 +472,10 @@ class JobsController < ApplicationController
   
   def export_to_csv
     @job = Job.find(params[:job_id])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
     @applicants = @job.applicants
     @job_applications = @job.job_applications
     @file_name = @job.title.gsub(/ /, '-')
@@ -507,6 +519,12 @@ class JobsController < ApplicationController
   
   def filter
     @job = Job.find(params[:job_id])
+    @apptracker = Apptracker.find(params[:apptracker_id])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
+    
     unless params[:filter].nil?
       @custom_fields = params[:filter][:custom_field_values]
       @custom_values = []

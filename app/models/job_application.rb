@@ -31,6 +31,6 @@ class JobApplication < ActiveRecord::Base
   
   def available_custom_fields
     self.job.all_job_app_custom_fields || []
-  end
+  end 
   
 end

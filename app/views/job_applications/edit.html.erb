@@ -21,7 +21,7 @@ document.observe("dom:loaded", function() {
   <%= f.hidden_field(:applicant_id, :value => @applicant.id ) %>
   <%= f.hidden_field(:job_id, :value => @job.id ) %>
   
-  <% if(User.current.admin?)%>
+  <% if(User.current.admin? || @job.is_manager?) %>
     <h3>Job Application Status</h3>
 	<p>
       <%= f.label(:submission_status) %><span class="required">*</span><br />
@@ -40,7 +40,7 @@ document.observe("dom:loaded", function() {
     </p>
   <% end %>
 
-  <% if(User.current.admin?)%>
+  <% if(User.current.admin? || @job.is_manager?) %>
 	<h3>Additional Information</h3>
     <% @job_application.custom_values.each do |custom_value| %>
 	  <% if !custom_value.value.blank? %>

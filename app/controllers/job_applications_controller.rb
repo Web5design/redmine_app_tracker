@@ -1,8 +1,7 @@
 class JobApplicationsController < ApplicationController
   unloadable
   # TODO make sure an applicant cannot add a new job application to a job they have already applied to
-  # TODO find out how to use authentication for allowing access to :new and :edit actions
-  before_filter :require_admin, :except => [:index, :show, :new, :edit, :create, :update, :destroy] 
+  before_filter :require_admin, :except => [:index, :show, :new, :edit, :create, :update, :destroy]
 
 #  before_filter :access_check, :except => [:index, :new]
 
@@ -57,6 +56,7 @@ class JobApplicationsController < ApplicationController
     @applicant = @job_application.applicant
 
 	unless User.current.admin? || @applicant.email == User.current.mail
+	  flash[:error] = "You are not authorized to view this section."
 		redirect_to('/') and return
 	end
     
@@ -72,11 +72,13 @@ class JobApplicationsController < ApplicationController
   # GET /job_applications/new
   # Get new_job_application_url
   def new
-    # secure the parent applicant id and create a new job_application
-
+    @job = Job.find params[:job_id] 
+    if @job.submission_date < DateTime.now
+      flash[:error] = "The deadline has passed for this job."
+      redirect_to('/') and return
+    end
     @applicant = Applicant.find_by_email(User.current.mail)
     @apptracker = Apptracker.find(params[:apptracker_id])
-    @job = Job.find params[:job_id]
     
     if @applicant.nil?
       redirect_to(new_applicant_url(:apptracker_id => @apptracker.id, :job_id => @job.id))
@@ -95,9 +97,10 @@ class JobApplicationsController < ApplicationController
     @job_application = JobApplication.find(params[:id])
     @job = Job.find @job_application.job_id
     @applicant = @job_application.applicant
-	unless User.current.admin? || @applicant.email == User.current.mail
-		redirect_to('/') and return
-	end
+  	unless User.current.admin? || @job.is_manager? || @applicant.email == User.current.mail
+  	  flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
     @apptracker = Apptracker.find(params[:apptracker_id])
     @job_application_materials = @job_application.job_application_materials.find :all, :include => [:attachments]
   end
@@ -107,8 +110,11 @@ class JobApplicationsController < ApplicationController
   def create
     @applicant = Applicant.find_by_email(User.current.mail)
     @job = Job.find params[:job_application][:job_id]
+    if @job.submission_date < DateTime.now
+      flash[:error] = "The deadline has passed for this job."
+      redirect_to('/') and return
+    end
     @job_application = JobApplication.new(:job => @job, :applicant => @applicant)
-    
     
     @apptracker = Apptracker.find(params[:job_application][:apptracker_id])
     
@@ -185,6 +191,7 @@ class JobApplicationsController < ApplicationController
     # find the job_application within its parent applicant
     @applicant = Applicant.find(params[:job_application][:applicant_id])
 	unless User.current.admin? || @applicant.email == User.current.mail
+	  flash[:error] = "You are not authorized to view this section."
 		redirect_to('/') and return
 	end
     @job_application = @applicant.job_applications.find(params[:id])
@@ -242,6 +249,7 @@ class JobApplicationsController < ApplicationController
     @job_application = JobApplication.find(params[:id])
     @applicant = Applicant.find(@job_application.applicant_id)
 	unless User.current.admin? || @applicant.email == User.current.mail
+	  flash[:error] = "You are not authorized to view this section."
 		redirect_to('/') and return
 	end
     @apptracker = Apptracker.find(@job_application.apptracker_id)
@@ -254,4 +262,5 @@ class JobApplicationsController < ApplicationController
       format.html { redirect_to(job_applications_url(:apptracker_id => @apptracker.id, :applicant_id => @applicant.id)) }
     end
   end
+  
 end

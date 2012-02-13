@@ -42,9 +42,19 @@ function toggle2() {
 <%= render :partial => "shared/tabs" %>
 
 <strong>
-<% if User.current.admin? %>
+<% if User.current.admin? || @job.is_manager? %>
+  <h3>Export Applicants to CSV</h3>
+  <p>
+  <% form_tag({ :action =>  :export_to_csv }, :html => { :multipart => true })do -%>
+    <%= hidden_field_tag :job_id, @job.id %>
+    <%= submit_tag "Export To CSV" -%>
+  <% end -%>
+  </p>
+  <p>
+  <%= button_to "Filter Job Applications", filter_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
+  </p>
+	
   <% form_tag({:controller => 'jobs', :action => 'zip_some'}, :id => 'applicant_form') do %>
-
   <!-- render Job Applications partial -->
   <h3>Submitted Applications - Total <%= @job_applications.length %></h3>
   <%= render :partial => "job_applications/job_application_tables", :locals => { :box => true } %>
@@ -75,13 +85,6 @@ function toggle2() {
     </p>
   <% end %>
   </p>
-
-  <h3>Export Applicants to CSV</h3>
-  <% form_tag({ :action =>  :export_to_csv }, :html => { :multipart => true })do -%>
-    <%= hidden_field_tag :job_id, @job.id %>
-    <%= submit_tag "Export To CSV" -%>
-  <% end -%>
-  <%= button_to "Filter Job Applications", filter_jobs_path(:job_id => @job.id) %>
 
 <% elsif User.current.logged? %>
 <span class="access-account">
@@ -138,7 +141,7 @@ function toggle2() {
 
 <strong>Description:</strong> <%= textilizable @job.description %><br />
 
-<% if User.current.admin? %>
+<% if User.current.admin? || @job.is_manager? %>
 	<% unless @job_application_custom_fields.empty? %>
 	  <h3>Additional Information</h3>
 		<% @job_application_custom_fields.each do |custom_field| %>
@@ -155,6 +158,7 @@ function toggle2() {
 </p>
 <br />
 
+<% unless User.current.admin? || @job.is_manager? %>
 <strong>
 <span class="access-account">	
 <% if User.current.logged? %>
@@ -183,3 +187,4 @@ function toggle2() {
 <% end %>
 </span>
 </strong>
+<% end %>

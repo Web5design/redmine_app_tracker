@@ -38,5 +38,9 @@ class Job < ActiveRecord::Base
   def all_job_app_custom_fields
     @all_job_app_custom_fields = self.job_application_custom_fields
   end
+  
+  def is_manager?(usr=User.current)
+    usr.member_of?(self.apptracker.project)
+  end  
 
 end
