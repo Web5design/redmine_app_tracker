@@ -510,12 +510,25 @@ class JobsController < ApplicationController
     unless params[:filter].nil?
       @custom_fields = params[:filter][:custom_field_values]
       @custom_values = []
+      # how many custom fields are we searching on
+      value_count = 0
       @custom_fields.each_key do |field_id|
         unless @custom_fields[field_id].nil? || @custom_fields[field_id].empty?
+          value_count = value_count + 1
           @custom_values += CustomValue.find(:all, :conditions => ["custom_field_id = ? and value like ?", field_id, "%#{@custom_fields[field_id]}%"])
         end  
       end
       job_app_ids = @custom_values.collect {|x| x.customized_id}
+      
+      # kick out job ids that do not fulfill all custom fields being searched on
+      counts = Hash.new(0)
+      job_app_ids.each { |app_id| counts[app_id] += 1 }
+      job_app_ids.uniq!
+      counts.each_key do |app_id|
+        if counts[app_id] != value_count
+          job_app_ids.delete(app_id)
+        end  
+      end 
       @job_applications = JobApplication.find(:all, :conditions => ["job_id = ? and id in (?)", params[:job_id], job_app_ids])
     end  
     
