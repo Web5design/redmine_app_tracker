@@ -44,7 +44,7 @@ function toggle2() {
 <strong>
 <% if User.current.admin? || @job.is_manager? %>
   <% unless @job_applications.length == 0 %>
-	  <h3>Export Applicants to CSV</h3>
+	  <h3>Export/Filter Applicants</h3>
 	  <p>
 	  <% form_tag({ :action =>  :export_to_csv }, :html => { :multipart => true })do -%>
 	    <%= hidden_field_tag :job_id, @job.id %>
