@@ -23,7 +23,8 @@ class JobApplication < ActiveRecord::Base
   # constants
   # TODO convert these values into variables that can be set from a settings page within Redmine
   SUBMISSION_STATUS = ['Unsubmitted','Submitted']
-  ACCEPTANCE_STATUS = ['Accepted', 'Declined', 'Pending'] 
+  OFFER_STATUS = ['Offer made, response pending', 'Offer made and accepted', 'Offer made and declined'] 
+  REVIEW_STATUS = ['Reviewed - promising, reserved', 'Reviewed - promising, deferred', 'Reviewed - deferred', 'Reviewed - generally unqualified'] 
   
   def validate
      

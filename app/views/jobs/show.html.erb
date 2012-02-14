@@ -54,6 +54,9 @@ function toggle2() {
 	  <p>
 	  <%= button_to "Filter Job Applications", filter_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
 	  </p>
+	  <p>
+	  <%= button_to "View All Job Applications As Table", view_table_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
+	  </p>
   <% end %>
   <% form_tag({:controller => 'jobs', :action => 'zip_some'}, :id => 'applicant_form') do %>
   <!-- render Job Applications partial -->

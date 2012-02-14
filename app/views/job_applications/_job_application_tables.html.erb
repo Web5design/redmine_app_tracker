@@ -13,8 +13,8 @@
 	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
 		  <%= sort_header_tag('created_at', :caption => 'Date Submitted') %>
 		  <%= sort_header_tag('created_at', :caption => 'Deadline') %>
-		  <%= sort_header_tag('submission_status', :caption => 'Submission Status') %>
-		  <%= sort_header_tag('acceptance_status', :caption => 'Acceptance Status') %>
+		  <%= sort_header_tag('acceptance_status', :caption => 'Review Status') %>
+		  <%= sort_header_tag('acceptance_status', :caption => 'Offer Status') %>
 		  <!--
 		  <th style="width:5%; text-align:left;">Referrals Required</th>
 		  <th style="width:5%; text-align:left;">Referrals Received</th>
@@ -32,8 +32,8 @@
 	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
 		  <%= sort_header_tag('created_at', :caption => 'Date Submitted') %>
 		  <%= sort_header_tag('created_at', :caption => 'Deadline') %>
-		  <%= sort_header_tag('submission_status', :caption => 'Submission Status') %>
-		  <%= sort_header_tag('acceptance_status', :caption => 'Acceptance Status') %>
+		  <%= sort_header_tag('acceptance_status', :caption => 'Review Status') %>
+		  <%= sort_header_tag('acceptance_status', :caption => 'Offer Status') %>
 		  <!--
 		  <th style="width:5%; text-align:left;">Referrals Required</th>
 		  <th style="width:5%; text-align:left;">Referrals Received</th>
@@ -78,11 +78,11 @@
           <td style="width:10%"><%= link_to "#{ja.applicant.first_name} #{ja.applicant.last_name}", applicant_url(ja.applicant.id, :apptracker_id => ja.apptracker_id) %></td>
           <td style="width:10%"><%= ja.created_at.month %>/<%= ja.created_at.day %>/<%= ja.created_at.year %> <%= ja.created_at.strftime("%I:%M %p") %></td>
 		  <td style="width:10%"><%= ja.job.submission_date.month %>/<%= ja.job.submission_date.day %>/<%= ja.job.submission_date.year %> <%= ja.job.submission_date.strftime("%I:%M %p") %></td>
-		  <td style="width:10%"><%= ja.submission_status %></td>
-		  <td style="width:10%"><%= ja.acceptance_status %></td>
+		  <td style="width:10%"><%= ja.review_status %></td>
+		  <td style="width:10%"><%= ja.offer_status %></td>
  		  <td style="width:5%"><%= ja.notes.nil? || ja.notes.blank? ? 'No' : 'Yes' %></td>
 		  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
-		  <td style="width:5%"><%= link_to 'Edit', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
+		  <td style="width:5%"><%= link_to 'Add Notes', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
           <td style="width:5%"><%= link_to 'Delete', job_application_url(:id => ja.id), 
             :confirm => "Are you sure you want to delete #{ja.applicant.first_name} #{ja.applicant.last_name}\'s record?", 
             :method => :delete,
@@ -97,8 +97,8 @@
 	          <td style="width:10%"><%= link_to "#{ja.applicant.first_name} #{ja.applicant.last_name}", applicant_url(ja.applicant.id, :apptracker_id => ja.apptracker_id) %></td>
 	          <td style="width:10%"><%= ja.created_at.month %>/<%= ja.created_at.day %>/<%= ja.created_at.year %> <%= ja.created_at.strftime("%I:%M %p") %></td>
 			  <td style="width:10%"><%= ja.job.submission_date.month %>/<%= ja.job.submission_date.day %>/<%= ja.job.submission_date.year %> <%= ja.job.submission_date.strftime("%I:%M %p") %></td>
-			  <td style="width:10%"><%= ja.submission_status %></td>
-			  <td style="width:10%"><%= ja.acceptance_status %></td>
+			  <td style="width:10%"><%= ja.review_status %></td>
+			  <td style="width:10%"><%= ja.offer_status %></td>
 	 		  <td style="width:5%"><%= ja.notes.nil? || ja.notes.blank? ? 'No' : 'Yes' %></td>
 			  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
 			  <td style="width:5%"><%= link_to 'Add Notes', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>

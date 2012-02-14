@@ -6,7 +6,6 @@ require 'tempfile'
 class JobsController < ApplicationController
   unloadable
   before_filter :require_admin, :except => [:index, :show, :register, :filter, :export_to_csv, :zip_some, :zip_all]
-  #before_filter :authorize
   
   helper :attachments
   include AttachmentsHelper
@@ -554,6 +553,25 @@ class JobsController < ApplicationController
   		end
   	end
   	@columns = @applicant_fields + @custom 
-  end 
+  end
+  
+  def view_table
+    @job = Job.find(params[:job_id])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
+    @apptracker = @job.apptracker
+    @job_applications = @job.job_applications.find(:all)
+    @job_application_custom_fields = @job.all_job_app_custom_fields
+    @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @custom = []
+    unless @job_application_custom_fields.empty?
+  		@job_application_custom_fields.each do |custom_field|
+  		  @custom << custom_field.name
+  		end
+  	end
+  	@columns = @applicant_fields + @custom
+  end  
   
 end
