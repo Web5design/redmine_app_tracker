@@ -5,7 +5,7 @@ require 'tempfile'
 
 class JobsController < ApplicationController
   unloadable
-  before_filter :require_admin, :except => [:index, :show, :register, :filter, :export_to_csv, :zip_some, :zip_all]
+  before_filter :require_admin, :except => [:index, :show, :register, :filter, :export_to_csv, :zip_some, :zip_all, :zip_filtered, :view_table]
   
   helper :attachments
   include AttachmentsHelper
