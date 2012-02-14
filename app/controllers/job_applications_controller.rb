@@ -190,11 +190,11 @@ class JobApplicationsController < ApplicationController
   def update
     # find the job_application within its parent applicant
     @applicant = Applicant.find(params[:job_application][:applicant_id])
-  	unless User.current.admin? || @job.is_manager? || @applicant.email == User.current.mail
+    @job_application = @applicant.job_applications.find(params[:id])
+  	unless User.current.admin? || @job_application.job.is_manager? || @applicant.email == User.current.mail
   	  flash[:error] = "You are not authorized to view this section."
   		redirect_to('/') and return
   	end
-    @job_application = @applicant.job_applications.find(params[:id])
     
     @job = Job.find @job_application.job_id
     @apptracker = Apptracker.find(params[:job_application][:apptracker_id])
