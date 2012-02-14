@@ -37,7 +37,6 @@ class JobsController < ApplicationController
   def show
     @job = Job.find(params[:id])
     @apptracker = @job.apptracker
-    @zipped_file = params[:zipped_file]
     
     session[:auth_source_registration] = nil
     @user = User.new(:language => Setting.default_language)
@@ -233,7 +232,7 @@ class JobsController < ApplicationController
   	end
     @material_types = @job.application_material_types.split(',')
     @file_name = @job.title.gsub(/[^a-zA-Z\d]/, '-')
-    @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-materials.zip"
+    @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-all-materials.zip"
     @ja_materials = Array.new
     @ja_referrals = Array.new
     filepaths = Array.new
@@ -266,21 +265,13 @@ class JobsController < ApplicationController
       material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
       counter = counter + 1
     end
-    
-    # check to see if the file exists already, and if it does, delete it.
-    # if File.file?(@zip_file_path)
-    #       File.delete(@zip_file_path)
-    #     end
-    
-    filename = "#{@file_name}-materials.zip"
-    file = Tempfile.new(filename)
-    
-    Zip::ZipOutputStream.open(file.path) do |zipfile|
+
+    Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
       @applicants.each do |applicant|
-        if zipfile.find_entry("#{applicant.last_name}_#{applicant.first_name}")
-          zipfile.remove("#{applicant.last_name}_#{applicant.first_name}")
+        if zipfile.find_entry("#{applicant.last_name}_#{applicant.first_name}_#{applicant.id}")
+          zipfile.remove("#{applicant.last_name}_#{applicant.first_name}_#{applicant.id}")
         end
-        zipfile.mkdir("#{applicant.last_name}_#{applicant.first_name}")  
+        zipfile.mkdir("#{applicant.last_name}_#{applicant.first_name}_#{applicant.id}")  
       end  
       
       unless @ja_materials.nil?
@@ -294,7 +285,7 @@ class JobsController < ApplicationController
               if zipfile.find_entry(new_file_name)
                 zipfile.remove(new_file_name)
               end
-              zipfile.get_output_stream("#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}/" + new_file_name) do |f|
+              zipfile.get_output_stream("#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).id}/" + new_file_name) do |f|
                 input = File.open(orig_file_path)
                 data_to_copy = input.read()
                 f.write(data_to_copy)
@@ -331,11 +322,11 @@ class JobsController < ApplicationController
           end    
         end
       end
+      
     end
-    send_file file.path, :type => 'application/zip', :disposition => 'attachment', :filename => filename
-    file.close 
-    #@zipped_file = "/uploads/#{@file_name}-materials.zip"
-    redirect_to job_path(@job, :apptracker_id => @job.apptracker_id)
+    
+    send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
+    File.delete(@zip_file_path)
     
   end
   
@@ -346,8 +337,8 @@ class JobsController < ApplicationController
   		redirect_to('/') and return
   	end
     @material_types = params[:application_material_types]
-    @file_name = @job.title.gsub(/ /, '-')
-    @zip_file_path = "#{RAILS_ROOT}/public/uploads/#{@file_name}-materials.zip"
+    @file_name = @job.title.gsub(/[^a-zA-Z\d]/, '-')
+    @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-materials.zip"
     filepaths = Array.new
     counter = 1
     material_id_hash = Hash.new
@@ -385,11 +376,6 @@ class JobsController < ApplicationController
     @material_types.each do |material|
       material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
       counter = counter + 1
-    end
-    
-    # check to see if the file exists already, and if it does, delete it.
-    if File.file?(@zip_file_path)
-      File.delete(@zip_file_path)
     end
     
     Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
@@ -447,8 +433,8 @@ class JobsController < ApplicationController
       end
     end
     
-    @zipped_file = "/uploads/#{@file_name}-materials.zip"
-    redirect_to job_path(@job, :apptracker_id => @job.apptracker_id, :zipped_file => @zipped_file)
+    send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
+    File.delete(@zip_file_path)
   end  
   
   
