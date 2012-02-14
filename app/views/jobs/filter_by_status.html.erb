@@ -11,11 +11,11 @@
   <%= hidden_field_tag :apptracker_id, @apptracker.id %>
   <p>
     <%= label_tag(:review_status, "Review Status") %><br />
-    <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS.insert(0, "")), :html_options => {:include_blank => true}) %>
+    <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS), :html_options => {:include_blank => true}) %>
   </p>
   <p>
     <%= label_tag(:offer_status, "Offer Status") %><br />
-    <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS.insert(0, "")), {:include_blank => true}) %>
+    <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS), {:include_blank => true}) %>
   </p>
   <%= submit_tag "Filter by Status" -%>
 <% end %>

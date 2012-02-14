@@ -25,11 +25,11 @@ document.observe("dom:loaded", function() {
     <h3>Job Application Status</h3>
 	<p>
       <%= f.label(:review_status, "Review Status") %><br />
-      <%= f.select(:review_status, JobApplication::REVIEW_STATUS, {:include_blank => true}) %>
+      <%= f.select(:review_status, JobApplication::REVIEW_STATUS) %>
     </p>
 	<p>
       <%= f.label(:offer_status, "Offer Status") %><br />
-      <%= f.select(:offer_status, JobApplication::OFFER_STATUS, {:include_blank => true}) %>
+      <%= f.select(:offer_status, JobApplication::OFFER_STATUS) %>
     </p>
 	<h3>Admin Notes</h3>
 	<p>
