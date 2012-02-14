@@ -10,14 +10,6 @@
   <% job_fields = @job_application_custom_fields.collect {|x| x.id} %>
   <%= hidden_field_tag :job_id, @job.id %>
   <%= hidden_field_tag :apptracker_id, @apptracker.id %>
-  <p>
-    <%= label_tag(:review_status, "Review Status") %><br />
-    <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS.insert(0, "")), :html_options => {:include_blank => true}) %>
-  </p>
-  <p>
-    <%= label_tag(:offer_status, "Offer Status") %><br />
-    <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS.insert(0, "")), {:include_blank => true}) %>
-  </p>
   <% unless job_fields.nil? || job_fields.empty? %>
     <h3>Search Applications</h3>
     <% @job_application.custom_field_values.each do |value| %>
