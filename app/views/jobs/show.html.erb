@@ -55,7 +55,10 @@ function toggle2() {
 	  <%= button_to "Filter Job Applications", filter_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
 	  </p>
 	  <p>
-	  <%= button_to "View All Job Applications As Table", view_table_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
+	  <%= button_to "Filter Job Applications by Status", filter_by_status_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
+	  </p>
+	  <p>
+	  <%= button_to "View All Job Applications As Table", view_table_job_applications_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
 	  </p>
   <% end %>
   <% form_tag({:controller => 'jobs', :action => 'zip_some'}, :id => 'applicant_form') do %>
@@ -78,12 +81,12 @@ function toggle2() {
 	  <% end %>
 	  <%= hidden_field_tag "job", @job.id %>
 	  <br />
-	  <%= submit_tag 'Create Zip File of Selected Materials' %>
+	  <%= submit_tag 'Create zip file of selected materials' %> (batches all materials for all selected candidates into one folder)
 	<% end %>
   <% end %>
   <% unless @job_applications.length == 0 %>
 	  <p>
-	    <%= button_to 'Zip All Submitted Materials', zip_all_jobs_path(:job => @job.id) %>
+	    <%= button_to "Zip all materials for all candidates into unique folders", zip_all_jobs_path(:job => @job.id) %>
 	  </p>
   <% end %>	
   </p>

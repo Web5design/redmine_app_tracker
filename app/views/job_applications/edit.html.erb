@@ -24,15 +24,13 @@ document.observe("dom:loaded", function() {
   <% if(User.current.admin? || @job.is_manager?) %>
     <h3>Job Application Status</h3>
 	<p>
-      <%= f.label(:offer_status, "Offer Status") %><br />
-      <%= f.select(:offer_status, JobApplication::OFFER_STATUS, {:include_blank => true}) %>
-    </p>
-
-	<p>
       <%= f.label(:review_status, "Review Status") %><br />
       <%= f.select(:review_status, JobApplication::REVIEW_STATUS, {:include_blank => true}) %>
     </p>
-
+	<p>
+      <%= f.label(:offer_status, "Offer Status") %><br />
+      <%= f.select(:offer_status, JobApplication::OFFER_STATUS, {:include_blank => true}) %>
+    </p>
 	<h3>Admin Notes</h3>
 	<p>
       <%= f.label(:notes) %><br />

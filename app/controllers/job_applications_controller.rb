@@ -1,7 +1,7 @@
 class JobApplicationsController < ApplicationController
   unloadable
   # TODO make sure an applicant cannot add a new job application to a job they have already applied to
-  before_filter :require_admin, :except => [:index, :show, :new, :edit, :create, :update, :destroy]
+  before_filter :require_admin, :except => [:index, :show, :new, :edit, :create, :update, :destroy, :view_table]
 
 #  before_filter :access_check, :except => [:index, :new]
 
@@ -261,6 +261,28 @@ class JobApplicationsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to(job_applications_url(:apptracker_id => @apptracker.id, :applicant_id => @applicant.id)) }
     end
+  end
+  
+  def view_table
+    sort_init 'review_status', 'asc'
+    sort_update %w(review_status offer_status)                
+                
+    @job = Job.find(params[:job_id])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
+    @apptracker = @job.apptracker
+    @job_applications = @job.job_applications.find(:all, :order => sort_clause)
+    @job_application_custom_fields = @job.all_job_app_custom_fields
+    @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @custom = []
+    unless @job_application_custom_fields.empty?
+  		@job_application_custom_fields.each do |custom_field|
+  		  @custom << custom_field.name
+  		end
+  	end
+  	@columns = @applicant_fields + @custom
   end
   
 end

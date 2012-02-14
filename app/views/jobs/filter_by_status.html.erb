@@ -6,8 +6,7 @@
 
 <%= render :partial => "shared/tabs" %>
 
-<% form_tag({:controller => 'jobs', :action => 'filter'}) do %>
-  <% job_fields = @job_application_custom_fields.collect {|x| x.id} %>
+<% form_tag({:controller => 'jobs', :action => 'filter_by_status'}) do %>
   <%= hidden_field_tag :job_id, @job.id %>
   <%= hidden_field_tag :apptracker_id, @apptracker.id %>
   <p>
@@ -18,15 +17,7 @@
     <%= label_tag(:offer_status, "Offer Status") %><br />
     <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS.insert(0, "")), {:include_blank => true}) %>
   </p>
-  <% unless job_fields.nil? || job_fields.empty? %>
-    <h3>Search Applications</h3>
-    <% @job_application.custom_field_values.each do |value| %>
-	  <% if job_fields.include? value.custom_field_id %>
-		<p><%= custom_field_tag_with_label :filter, value %></p>
-	  <% end %>
-    <% end -%>
-  <% end %>
-  <%= submit_tag "Filter" -%>
+  <%= submit_tag "Filter by Status" -%>
 <% end %>
 
 <% unless @job_applications.nil? || @job_applications.empty? %>
@@ -45,6 +36,8 @@
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
 		  <% end %>
+		  <th style="text-align:left;">Review Status</th>
+		  <th style="text-align:left;">Offer Status</th>
 	    </tr>	
 	  </thead>
 	  <tbody>
@@ -61,6 +54,8 @@
 			  <% end %>
 		    <% end %>
 		  <% end %>
+		  <td><%= ja.review_status %></td>
+		  <td><%= ja.offer_status %></td>
 		</tr>
 		<% end %>
 	  </tbody>
