@@ -23,6 +23,9 @@
 
 <% unless @job_applications.nil? %>
 	<p></p>
+	<p>
+	  <%= button_to 'Zip Materials for Filtered Results', zip_filtered_jobs_path(:job_id => @job.id, :job_applications => @job_applications) %>
+	</p>
 	<h3>Results - <%= @job_applications.length %></h3>
 	<table class="list">
 	  <thead>
