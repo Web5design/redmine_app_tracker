@@ -6,29 +6,47 @@
 
 <%= render :partial => "shared/tabs" %>
 
+<h3>Filter Job Applications by Status</h3>
+<p>The filter will be applied to all applications that match <strong>any</strong> of the options you choose.</p>
+
 <% form_tag({:controller => 'jobs', :action => 'filter_by_status'}) do %>
   <%= hidden_field_tag :job_id, @job.id %>
   <%= hidden_field_tag :apptracker_id, @apptracker.id %>
   <p>
+    <%= label_tag(:submission_status, "Submission Status") %><br />
+    <%= select_tag(:submission_status, options_for_select(JobApplication::SUBMISSION_STATUS)) %>
+  </p>
+  <p>
     <%= label_tag(:review_status, "Review Status") %><br />
-    <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS), :html_options => {:include_blank => true}) %>
+    <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS)) %>
   </p>
   <p>
     <%= label_tag(:offer_status, "Offer Status") %><br />
-    <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS), {:include_blank => true}) %>
+    <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS)) %>
   </p>
   <%= submit_tag "Filter by Status" -%>
 <% end %>
 
 <% unless @job_applications.nil? || @job_applications.empty? %>
-	<p></p>
+    <p></p>
+	<h3>Results - <%= @job_applications.length %></h3>
+	
+	<p>	
+	  <% form_tag({ :action =>  :export_filtered_to_csv }, :html => { :multipart => true })do -%>
+	    <%= hidden_field_tag :job_id, @job.id %>
+		<% @job_applications.each do |ja| %>
+	      <%= hidden_field_tag "job_app_ids[]", ja.id %>
+	    <% end %>
+	    <%= submit_tag "Export Filtered Results To CSV" -%>
+	  <% end -%>
+	</p>
 	<p>
 	  <%= button_to 'Zip Materials for Filtered Results Into Single Folder', zip_filtered_single_jobs_path(:job_id => @job.id, :job_applications => @job_applications) %>
 	</p>
 	<p>
 	  <%= button_to 'Zip Materials for Filtered Results Into Folders by Applicant', zip_filtered_jobs_path(:job_id => @job.id, :job_applications => @job_applications) %>
 	</p>
-	<h3>Results - <%= @job_applications.length %></h3>
+	
 	<table class="list">
 	  <thead>
 	    <tr>
@@ -36,6 +54,7 @@
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
 		  <% end %>
+		  <th style="text-align:left;">Submission Status</th>
 		  <th style="text-align:left;">Review Status</th>
 		  <th style="text-align:left;">Offer Status</th>
 	    </tr>	
@@ -44,16 +63,19 @@
 		<% @job_applications.each do |ja| %>
 		<tr>
 		  <td><%= link_to "View", job_application_path(ja, :apptracker_id => @apptracker.id) %></td>	
-		  <% @applicant_fields.each do |af| %>
-	        <td><%= ja.applicant.send(af) %></td>
-	      <% end %>
-		  <% @custom.each do |c| %>
-		    <% ja.custom_values.each do |cv| %>
-		      <% if cv.custom_field.name == c %>
-		        <td><%= show_value(cv) %></td>
-			  <% end %>
-		    <% end %>
+		  <% @columns.each do |column| %>
+		    <% if @applicant_fields.include?(column) %>
+	          <td><%= ja.applicant.send(column) %></td>
+	        <% end %>
+		    <% if @custom.include?(column) %>
+			  <% ja.custom_values.each do |cv| %>
+		        <% if cv.custom_field.name == column %>
+		          <td><%= show_value(cv) %></td>
+			    <% end %>
+		      <% end %>
+			<% end %>
 		  <% end %>
+		  <td><%= ja.submission_status %></td>
 		  <td><%= ja.review_status %></td>
 		  <td><%= ja.offer_status %></td>
 		</tr>

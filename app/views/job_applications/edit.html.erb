@@ -24,6 +24,10 @@ document.observe("dom:loaded", function() {
   <% if(User.current.admin? || @job.is_manager?) %>
     <h3>Job Application Status</h3>
 	<p>
+      <%= f.label(:submission_status, "Submission Status") %><br />
+      <%= f.select(:submission_status, JobApplication::SUBMISSION_STATUS) %>
+    </p>
+	<p>
       <%= f.label(:review_status, "Review Status") %><br />
       <%= f.select(:review_status, JobApplication::REVIEW_STATUS) %>
     </p>

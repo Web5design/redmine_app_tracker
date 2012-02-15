@@ -5,7 +5,7 @@ require 'tempfile'
 
 class JobsController < ApplicationController
   unloadable
-  before_filter :require_admin, :except => [:index, :show, :register, :filter, :filter_by_status, :export_to_csv, :zip_some, :zip_all, :zip_filtered, :zip_filtered_single]
+  before_filter :require_admin, :except => [:index, :show, :register, :filter, :filter_by_status, :export_to_csv, :zip_some, :zip_all, :zip_filtered, :zip_filtered_single, :export_filtered_to_csv]
   
   helper :attachments
   include AttachmentsHelper
@@ -811,6 +811,9 @@ class JobsController < ApplicationController
   	end
   	@columns = @applicant_fields + @custom
   	@job_applications = []
+  	unless params[:submission_status].blank?
+  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :submission_status => params[:submission_status]})
+  	end
   	unless params[:review_status].blank?
   	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :review_status => params[:review_status]})
   	end 
@@ -818,6 +821,56 @@ class JobsController < ApplicationController
   	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :offer_status => params[:offer_status]})
   	end 
   	@job_applications.flatten!
+  end
+  
+  def export_filtered_to_csv
+    @job = Job.find(params[:job_id])
+    unless User.current.admin? || @job.is_manager?
+      flash[:error] = "You are not authorized to view this section."
+  		redirect_to('/') and return
+  	end
+  	@job_applications = JobApplication.find(:all, :conditions => ["id in (?)", params[:job_app_ids]])
+  	
+    @file_name = @job.title.gsub(/ /, '-')
+    
+    @job_application_custom_fields = @job.all_job_app_custom_fields
+    @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @custom = []
+    unless @job_application_custom_fields.empty?
+  		@job_application_custom_fields.each do |custom_field|
+  		  @custom << custom_field.name
+  		end
+  	end
+  	@columns = @applicant_fields + @custom + ['submission_status', 'review_status', 'offer_status']
+    
+    csv_string = FasterCSV.generate do |csv| 
+      # header row 
+      csv << @columns
+
+      # data rows 
+      @job_applications.each do |ja|
+        row = []
+        @applicant_fields.each do |af|
+          row << ja.applicant.send(af)
+        end
+        @custom.each do |c| 
+          ja.custom_values.each do |cv|
+            if cv.custom_field.name == c
+              row << show_value(cv)
+            end  
+          end
+        end
+        row << ja.submission_status
+        row << ja.review_status
+        row << ja.offer_status  
+        csv << row
+      end 
+    end 
+
+    # send it to the browser
+    send_data csv_string, 
+            :type => 'text/html; charset=iso-8859-1; header=present', 
+            :disposition => "attachment; filename=#{@file_name}-applicant-status.csv"
   end
   
 end
