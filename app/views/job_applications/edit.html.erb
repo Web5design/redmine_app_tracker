@@ -6,7 +6,7 @@ document.observe("dom:loaded", function() {
 
 <% flash[:notice] %>
 <div class="contextual">
-  <%= link_to 'Back', jobs_url(:apptracker_id => params[:apptracker_id]), :class => 'icon icon-history' %>
+  <%= link_to 'Back', job_url(@job_application.job, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-history' %>
 </div>
 
 <h2><%=h Apptracker.find(@job_application.apptracker_id).title %>: <%=h Job.find(@job_application.job_id).title %> </h2>
