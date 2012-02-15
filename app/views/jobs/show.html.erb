@@ -44,21 +44,21 @@ function toggle2() {
 <strong>
 <% if User.current.admin? || @job.is_manager? %>
   <% unless @job_applications.length == 0 %>
-	  <h3>Export/Filter Applicants</h3>
+	  <h3>Job Application Viewing Options</h3>
 	  <p>
 	  <% form_tag({ :action =>  :export_to_csv }, :html => { :multipart => true })do -%>
 	    <%= hidden_field_tag :job_id, @job.id %>
-	    <%= submit_tag "Export To CSV" -%>
+	    <%= submit_tag "Export All Applicants To CSV" -%>
 	  <% end -%>
 	  </p>
 	  <p>
-	  <%= button_to "Filter Job Applications", filter_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
+	  <%= button_to "View All Job Applications As Table", view_table_job_applications_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
+	  </p>	
+	  <p>
+	  <%= button_to "Filter Job Applications By Application Fields", filter_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
 	  </p>
 	  <p>
 	  <%= button_to "Filter Job Applications by Status", filter_by_status_jobs_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
-	  </p>
-	  <p>
-	  <%= button_to "View All Job Applications As Table", view_table_job_applications_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
 	  </p>
   <% end %>
   <% form_tag({:controller => 'jobs', :action => 'zip_some'}, :id => 'applicant_form') do %>
