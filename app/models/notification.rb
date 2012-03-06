@@ -13,7 +13,7 @@ class Notification < Mailer
   def application_updated(job_application)
     # Send the email to the applicant
     recipients Applicant.find_by_id(job_application.applicant_id).email
-    subject "Application Updated"
+    subject "Berkman Center Application Updated"
     body :user => Applicant.find_by_id(job_application.applicant_id),
          :url => url_for(:controller => 'job_application', :action => 'show', :id => job_application.id, :apptracker_id => job_application.apptracker_id)
     content_type "text/html"

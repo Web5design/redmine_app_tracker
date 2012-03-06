@@ -227,8 +227,10 @@ class JobApplicationsController < ApplicationController
           end
         end
         
-        #Send Notification
-        Notification.deliver_application_updated(@job_application)
+        if @applicant.email == User.current.mail
+          #Send Notification
+          Notification.deliver_application_updated(@job_application)
+        end  
         # no errors, redirect with success message
         if(User.current.admin? || @job_application.job.is_manager?)
           format.html { redirect_to(job_url(@job_application.job_id, :apptracker_id => @job_application.apptracker_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
