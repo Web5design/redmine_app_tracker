@@ -335,62 +335,114 @@ class JobsController < ApplicationController
   end
   
   def zip_some
-    @job = Job.find(params[:job])
-    unless User.current.admin? || @job.is_manager?
-      flash[:error] = "You are not authorized to view this section."
-  		redirect_to('/') and return
-  	end
-    @material_types = params[:application_material_types]
-    @file_name = @job.title.gsub(/[^a-zA-Z\d]/, '-')
-    @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-materials.zip"
-    filepaths = Array.new
-    counter = 1
-    material_id_hash = Hash.new
-    @ja_materials = Array.new
-    if params[:applicant_referral]
-      @ja_referrals = Array.new
-    end
-    applicants = Array.new
-    unless params[:applicants_to_zip].nil?
-      params[:applicants_to_zip].each do |ja|
-        applicants << JobApplication.find(ja).applicant.id
+    if params[:commit] == "Bulk Change Status"
+      unless params[:applicants_to_zip].nil?
+        applications = Array.new
+        params[:applicants_to_zip].each do |ja|
+          applications << JobApplication.find(ja)
+        end
+        applications.each do |app|
+          if !params[:submission_status].blank?
+            app.submission_status = params[:submission_status]
+          end  
+          if !params[:review_status].blank?
+            app.review_status = params[:review_status]
+          end  
+          if !params[:offer_status].blank?
+            app.offer_status = params[:offer_status]
+          end 
+          app.save!     
+        end
+        flash[:notice] = "Applications successfully updated!"
+        redirect_to :back
+      else
+        flash[:notice] = "You did not select any applications."
+        redirect_to :back  
       end
-    end
-    @applications = JobApplication.find(:all, :conditions => ["job_id = ? and applicant_id in (?)", @job.id, applicants])
+    else 
+      @job = Job.find(params[:job])
+      unless User.current.admin? || @job.is_manager?
+        flash[:error] = "You are not authorized to view this section."
+    		redirect_to('/') and return
+    	end
+      @material_types = params[:application_material_types]
+      @file_name = @job.title.gsub(/[^a-zA-Z\d]/, '-')
+      @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-materials.zip"
+      filepaths = Array.new
+      counter = 1
+      material_id_hash = Hash.new
+      @ja_materials = Array.new
+      if params[:applicant_referral]
+        @ja_referrals = Array.new
+      end
+      applicants = Array.new
+      unless params[:applicants_to_zip].nil?
+        params[:applicants_to_zip].each do |ja|
+          applicants << JobApplication.find(ja).applicant.id
+        end
+      end
+      @applications = JobApplication.find(:all, :conditions => ["job_id = ? and applicant_id in (?)", @job.id, applicants])
     
-    @applications.each do |app|
-      @ja_materials << JobApplicationMaterial.find(:first, :conditions => {:job_application_id => app.id})
+      @applications.each do |app|
+        @ja_materials << JobApplicationMaterial.find(:first, :conditions => {:job_application_id => app.id})
+        unless @ja_referrals.nil?
+          @ja_referrals << JobApplicationReferral.find(:all, :conditions => {:job_application_id => app.id})
+        end  
+      end  
+    
       unless @ja_referrals.nil?
-        @ja_referrals << JobApplicationReferral.find(:all, :conditions => {:job_application_id => app.id})
-      end  
-    end  
-    
-    unless @ja_referrals.nil?
-      if @material_types.include?("Proposed Work")
-        @material_types.insert(@material_types.index("Proposed Work") + 1, "Referral")
-      elsif @material_types.include?("Cover Letter")
-        @material_types.insert(@material_types.index("Cover Letter") + 1, "Referral")
-      elsif @material_types.include?("Resume or CV")
-        @material_types.insert(@material_types.index("Resume or CV") + 1, "Referral")
-      else 
-        @material_types.insert(@material_types.index("Resume or CV") + 1, "Referral")
-      end  
-    end
+        if @material_types.include?("Proposed Work")
+          @material_types.insert(@material_types.index("Proposed Work") + 1, "Referral")
+        elsif @material_types.include?("Cover Letter")
+          @material_types.insert(@material_types.index("Cover Letter") + 1, "Referral")
+        elsif @material_types.include?("Resume or CV")
+          @material_types.insert(@material_types.index("Resume or CV") + 1, "Referral")
+        else 
+          @material_types.insert(@material_types.index("Resume or CV") + 1, "Referral")
+        end  
+      end
       
-    @material_types.each do |material|
-      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
-      counter = counter + 1
-    end
+      @material_types.each do |material|
+        material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
+        counter = counter + 1
+      end
     
-    Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-      unless @ja_materials.nil?
-        @ja_materials.each do |jam|
-          jam.attachments.each do |jama|
-            @material_types.each do |mt|
-              if mt == jama.description
-                ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-                new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
-                orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
+      Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+        unless @ja_materials.nil?
+          @ja_materials.each do |jam|
+            jam.attachments.each do |jama|
+              @material_types.each do |mt|
+                if mt == jama.description
+                  ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
+                  new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+                  orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
+                  if File.exists?(orig_file_path)
+                    orig_file_name = File.basename(orig_file_path)
+                    if zipfile.find_entry(new_file_name)
+                      zipfile.remove(new_file_name)
+                    end
+                    zipfile.get_output_stream(new_file_name) do |f|
+                      input = File.open(orig_file_path)
+                      data_to_copy = input.read()
+                      f.write(data_to_copy)
+                    end
+                  else
+                    puts "Warning: file #{file_path} does not exist"
+                  end
+                end  
+              end  
+            end    
+          end 
+        end  
+
+        unless @ja_referrals.nil?
+          @ja_referrals.each do |jar|
+            jar.each do |ref|
+              ref.attachments.each do |jara|
+                ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
+                new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              
+                orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
                 if File.exists?(orig_file_path)
                   orig_file_name = File.basename(orig_file_path)
                   if zipfile.find_entry(new_file_name)
@@ -405,47 +457,21 @@ class JobsController < ApplicationController
                   puts "Warning: file #{file_path} does not exist"
                 end
               end  
-            end  
-          end    
-        end 
-      end  
-
-      unless @ja_referrals.nil?
-        @ja_referrals.each do |jar|
-          jar.each do |ref|
-            ref.attachments.each do |jara|
-              ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
-              
-              orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
-              if File.exists?(orig_file_path)
-                orig_file_name = File.basename(orig_file_path)
-                if zipfile.find_entry(new_file_name)
-                  zipfile.remove(new_file_name)
-                end
-                zipfile.get_output_stream(new_file_name) do |f|
-                  input = File.open(orig_file_path)
-                  data_to_copy = input.read()
-                  f.write(data_to_copy)
-                end
-              else
-                puts "Warning: file #{file_path} does not exist"
-              end
-            end  
-          end    
+            end    
+          end
         end
       end
-    end
     
-    begin
-      send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
-      File.delete(@zip_file_path)
-    rescue  
-      if File.file?(@zip_file_path)
+      begin
+        send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
         File.delete(@zip_file_path)
-      end  
-      puts "Error sending file"
-    end
+      rescue  
+        if File.file?(@zip_file_path)
+          File.delete(@zip_file_path)
+        end  
+        puts "Error sending file"
+      end
+    end  
   end  
   
   
@@ -871,6 +897,6 @@ class JobsController < ApplicationController
     send_data csv_string, 
             :type => 'text/html; charset=iso-8859-1; header=present', 
             :disposition => "attachment; filename=#{@file_name}-applicant-status.csv"
-  end
+  end  
   
 end
