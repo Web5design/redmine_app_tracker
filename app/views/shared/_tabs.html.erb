@@ -14,7 +14,7 @@
       </li>
 	  <!--<li><a href="/application_materials" id="tab-ApplicationMaterials" onclick="showTab('ApplicationMaterials'); this.blur(); return false;">Application Materials</a></li>
       <li><a href="/job_applications" id="tab-JobApplications" onclick="showTab('JobApplications'); this.blur(); return false;">Job Applications</a></li>-->
-    <% elsif User.current.member_of?(Apptracker.find(params[:apptracker_id]).project) %>
+    <% elsif User.current.member_of?(Apptracker.find(@apptracker.id).project) %>
 	  <!-- Manager Role -->
 
       <li><%= link_to 'All Jobs', jobs_url(:apptracker_id => params[:apptracker_id], :project_identifier => params[:project_identifier]), 
