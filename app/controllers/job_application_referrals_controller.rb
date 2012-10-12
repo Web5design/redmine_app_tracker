@@ -45,12 +45,32 @@ class JobApplicationReferralsController < ApplicationController
   def new
     @job_application = JobApplication.find(params[:id])
     @applicant = @job_application.applicant_id
-    @apptracker = @job_application.apptracker_id
-    @job = @job_application.job_id
+    @apptracker = Apptracker.find(@job_application.apptracker_id)
+    @job = Job.find(@job_application.job_id)
     @job_application_referral = @job_application.job_application_referrals.build()
   end
 
   def create
+    @job_application = JobApplication.find(params[:job_application_referral][:job_application_id])
+    
+    @job_application_referral = @job_application.job_application_referrals.build(params[:job_application_referral])
+    @job_application_referral.save
+    
+    # Send email to referrer to request referral
+    Notification.deliver_request_referral(@job_application, @job_application_referral.email, @job_application_referral)
+    redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Referral request has been submitted.")
+  end
+
+  def edit
+    @job_application_referral = JobApplicationReferral.find(params[:id])
+    @job_application = JobApplication.find(params[:job_app_id])
+    @applicant = @job_application.applicant_id
+    @apptracker = Apptracker.find(@job_application.apptracker_id)
+    @job = Job.find(@job_application.job_id)
+    #@job_application_referral = @job_application.job_application_referrals.build()
+  end
+
+  def update
     @job_application = JobApplication.find(params[:job_application_referral][:job_application_id])
     params[:job_application_referral][:referral_text] = params[:attachments]["1"][:description]
     
@@ -63,12 +83,6 @@ class JobApplicationReferralsController < ApplicationController
     Notification.deliver_referral_complete(@job_application, @job_application_referral.email)
     
     redirect_to :controller => 'jobs', :action => 'index', :apptracker_id => @job_application.apptracker_id
-  end
-
-  def edit
-  end
-
-  def update
   end
 
   def destroy

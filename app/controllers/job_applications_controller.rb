@@ -1,7 +1,7 @@
 class JobApplicationsController < ApplicationController
   unloadable
   # TODO make sure an applicant cannot add a new job application to a job they have already applied to
-  before_filter :require_admin, :except => [:index, :show, :new, :edit, :create, :update, :destroy, :view_table]
+  before_filter :require_admin, :except => [:index, :show, :new, :edit, :create, :update, :destroy, :view_table, :new_referral]
 
 #  before_filter :access_check, :except => [:index, :new]
 
@@ -54,6 +54,7 @@ class JobApplicationsController < ApplicationController
     # secure the parent apptracker id and find requested job_application
     @job_application = JobApplication.find(params[:id])
     @applicant = @job_application.applicant
+    @apptracker = Apptracker.find(@job_application.apptracker_id)
 
   	unless User.current.admin? || @job_application.job.is_manager? || @applicant.email == User.current.mail
   	  flash[:error] = "You are not authorized to view this section."
@@ -84,11 +85,11 @@ class JobApplicationsController < ApplicationController
       redirect_to(new_applicant_url(:apptracker_id => @apptracker.id, :job_id => @job.id))
     else
       @job_application = JobApplication.new(:job => @job, :applicant => @applicant)
+      @job_application_referral = @job_application.job_application_referrals.build()
       respond_to do |format|
         format.html # new.html.erb
       end
     end  
-    
   end
 
   # GET /job_applications/1/edit
@@ -149,21 +150,18 @@ class JobApplicationsController < ApplicationController
         
           attachments = Attachment.attach_files(@job_application_material, params[:attachments])
           render_attachment_warning_if_needed(@job_application_material)
-        
-          #send referrer emails
-          unless params[:email].nil?
-            @emails = params[:email].split(',')
-            @emails.each do |email|
-              Notification.deliver_request_referral(@job_application, email)
-            end
-          end
       
           #Send Notification
           Notification.deliver_application_submitted(@job_application) 
-        
-          flash[:notice] = l(:notice_successful_create)
+          
           # no errors, redirect with success message
-          format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Application has been submitted.") }
+          flash[:notice] = l(:notice_successful_create)
+          #if there are referrals required redirect to referral entry page
+          unless @job.referrer_count.nil? || @job.referrer_count == "0"
+            format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Application has been created. Please fill in your referrals.") }
+          else  
+            format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Application has been submitted.") }
+          end  
         else
           # validation prevented save; redirect back to new.html.erb with error messages
           format.html { render :action => "new" }
@@ -183,6 +181,14 @@ class JobApplicationsController < ApplicationController
         format.html { render :action => "new" }  
       end  
     end  
+  end
+  
+  def new_referral
+    @job_application = JobApplication.find(params[:job_application])
+    @applicant = @job_application.applicant_id
+    @apptracker = Apptracker.find(@job_application.apptracker_id)
+    @job = Job.find(@job_application.job_id)
+    @job_application_referral = @job_application.job_application_referrals.build()
   end
 
   # PUT /job_applications/1

@@ -19,13 +19,14 @@ class Notification < Mailer
     content_type "text/html"
   end
   
-  def request_referral(job_application, email)
+  def request_referral(job_application, email, job_application_referral)
     @job_application = job_application
+    @job_application_referral = job_application_referral
     # Send email to referrer
     recipients email
     subject "Referral Request"
     body :user => Applicant.find_by_id(job_application.applicant_id),
-         :url => url_for(:controller => 'job_application', :action => 'show', :id => job_application.id, :apptracker_id => job_application.apptracker_id)
+         :url => url_for(:controller => 'job_application_referral', :action => 'show', :id => job_application_referral.id, :job_app_id => job_application.id, :apptracker_id => job_application.apptracker_id)
     content_type "text/html"     
   end
   

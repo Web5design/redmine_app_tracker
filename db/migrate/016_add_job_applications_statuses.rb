@@ -6,8 +6,8 @@ class AddJobApplicationsStatuses < ActiveRecord::Migration
   end
 
   def self.down
-    remove_column :jobs, :offer_status
-    remove_column :jobs, :review_status
+    remove_column :job_applications, :offer_status
+    remove_column :job_applications, :review_status
     add_column :job_applications, :acceptance_status, :string
   end
 end

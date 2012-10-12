@@ -10,20 +10,32 @@
   <%= jar.text_field(:first_name) %>
   </p>
 		<p>
+  		<%= jar.label(:first_name) %><span class="required">*</span><br />
+  		<%= jar.text_field(:first_name) %>
+  		</p>
+		<p>
 		<%= jar.label(:last_name) %><span class="required">*</span><br />
     	<%= jar.text_field(:last_name) %>
 		</p>
+		<p>
+	    <%= jar.label(:title) %><span class="required">*</span><br />
+	    <%= jar.text_field(:title) %>
+	    </p>
+		<p>
+	    <%= jar.label(:affiliation) %><span class="required">*</span><br />
+	    <%= jar.text_field(:affiliation) %>
+  		</p>
+		<p>
+	    <%= jar.label(:relationship) %><span class="required">*</span><br />
+	    <%= jar.text_field(:relationship) %>
+  		</p>
 		<p>
 	    <%= jar.label(:email) %><span class="required">*</span><br />
 	    <%= jar.text_field(:email) %>
   		</p>
 	    <p>
-	    <%= jar.label(:phone) %><span class="required">*</span><br />
+	    <%= jar.label(:phone) %><br />
 	    <%= jar.text_field(:phone) %>
-	    </p>
-		<p>
-	    <%= jar.label(:title) %><br />
-	    <%= jar.text_field(:title) %>
 	    </p>
 		<p>
 	    <%= jar.label(:notes) %><br />
@@ -39,3 +51,4 @@
     <%= jar.submit('Save') %>
   </p>
 <% end %>
+

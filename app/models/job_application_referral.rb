@@ -6,7 +6,7 @@ class JobApplicationReferral < ActiveRecord::Base
   acts_as_attachable :delete_permission => :manage_documents
 
   # validations
-  validates_presence_of :first_name, :last_name, :email
+  validates_presence_of :first_name, :last_name, :email, :title, :affiliation, :relationship
 
   # constants
   
