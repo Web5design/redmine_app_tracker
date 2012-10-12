@@ -1,3 +1,7 @@
-A referral request has been submitted.
+You're getting this email because you've been asked to submit a letter of recommendation for <%= @job_application.applicant.first_name %> <%= @job_application.applicant.last_name %>'s application to be a fellow at the Berkman Center for Internet & Society.  You may upload your letter at the following link: <%= link_to 'Submit Referral', edit_job_application_referral_url(@job_application_referral.id, :job_app_id => @job_application.id, :apptracker_id => @job_application.apptracker_id) %>
 
-Please go here to submit a referral: <%= link_to 'Submit Referral', edit_job_application_referral_url(@job_application_referral.id, :job_app_id => @job_application.id, :apptracker_id => @job_application.apptracker_id) %>
+The fellowship application deadline is <%= @job_application.job.submission_date.month %>/<%= @job_application.job.submission_date.day %>/<%= @job_application.job.submission_date.year %> <%= @job_application.job.submission_date.strftime("%I:%M %p") %> and we will be accepting recommendation letters until this time.
+
+As soon as your letter is uploaded, both you and <%= @job_application.applicant.first_name %> <%= @job_application.applicant.last_name %> will receive an email confirming its successful receipt. Your letter itself will not be visible to <%= @job_application.applicant.first_name %> <%= @job_application.applicant.last_name %>. 
+
+Thank you very much for your time and energies.

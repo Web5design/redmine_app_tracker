@@ -2,8 +2,15 @@
 
 <%= render :partial => "shared/tabs" %>
 
-<% i = 0 %>
-  <% until i == @job.referrer_count.to_i %>
+<p>Please provide us the names and contact infromation for references who will be asked to submit letters of recommendation on your behalf.</p>
+
+<p>When you click the below submit button, an email will be sent directly to your reference from our system with a unique link at which a recommendation letter may be uploaded.  The link is tied directly to your account and application.</p>
+
+<p>When a letter is uploaded, both you and the reference will receive a letter confirming its receipt.  You will be able to see if a letter is or is not yet up loaded by viewing your account, however you will not have access to the letter itself once it is uploaded.</p>
+
+<p>We will include the application deadline in our automated email to your reference, however you may wish to reinforce the application deadline with them as well.  Should your references not submit letters by the application deadline, we will still be able to view other portions of your application; however, we most strongly recommend and request that your letters are received by deadline so that we are able to give your application a comprehensive review.</p>
+
+
     <span class="required">*</span> Required Fields
 	<% form_for(@job_application_referral, :html => {:multipart => true}) do |jar| %>
 	  <%= jar.error_messages %>
@@ -41,5 +48,3 @@
 	    <%= jar.submit('Save') %>
 	  </p>
 	<% end %>
-    <% i += 1 %>
-  <% end %>

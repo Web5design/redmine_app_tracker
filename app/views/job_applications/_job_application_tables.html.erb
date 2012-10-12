@@ -56,7 +56,6 @@
 		  <th style="width:5%; text-align:left;"></th>
 		  <th style="width:5%; text-align:left;"></th>
 		  <th style="width:5%; text-align:left;"></th>
-		  <th style="width:5%; text-align:left;"></th>
 	    <% else %>
 	      <!-- Anonymous Role -->
 	      <!-- No view for Anonymous -->
@@ -116,7 +115,6 @@
 		  <td style="width:5%"><%= link_to 'View Application', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
    		  <td style="width:5%"><%= link_to 'View Referrals', job_application_referrals_url(:job_id => ja.job.id, :job_application_id => ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
 		  <% if ja.job.submission_date > DateTime.now %>
-		    <td style="width:5%"><%= link_to 'Edit Application', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
             <td style="width:5%"><%= link_to 'Delete', job_application_url(:id => ja.id), 
               :confirm => "Are you sure you want to delete #{ja.applicant.first_name} #{ja.applicant.last_name}\'s record?", 
               :method => :delete,

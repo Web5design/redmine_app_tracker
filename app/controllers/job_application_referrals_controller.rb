@@ -58,7 +58,12 @@ class JobApplicationReferralsController < ApplicationController
     
     # Send email to referrer to request referral
     Notification.deliver_request_referral(@job_application, @job_application_referral.email, @job_application_referral)
-    redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Referral request has been submitted.")
+    
+    if @job_application.job_application_referrals.length < @job_application.job.referrer_count.to_i
+      redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in another referral.") }
+    else  
+      redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Referral request has been submitted.")
+    end 
   end
 
   def edit
@@ -67,22 +72,24 @@ class JobApplicationReferralsController < ApplicationController
     @applicant = @job_application.applicant_id
     @apptracker = Apptracker.find(@job_application.apptracker_id)
     @job = Job.find(@job_application.job_id)
-    #@job_application_referral = @job_application.job_application_referrals.build()
   end
 
   def update
     @job_application = JobApplication.find(params[:job_application_referral][:job_application_id])
     params[:job_application_referral][:referral_text] = params[:attachments]["1"][:description]
+    @job_application_referral = JobApplicationReferral.find(params[:id])
     
-    @job_application_referral = @job_application.job_application_referrals.build(params[:job_application_referral])
-    @job_application_referral.save
+    #@job_application_referral = @job_application.job_application_referrals.build(params[:job_application_referral])
+    @job_application_referral.update_attributes(params[:job_application_referral])
+    
     attachments = Attachment.attach_files(@job_application_referral, params[:attachments])
     render_attachment_warning_if_needed(@job_application_referral)
     
     # Send email to applicant and referrer that referral has been submitted
     Notification.deliver_referral_complete(@job_application, @job_application_referral.email)
+    Notification.deliver_referral_complete_to_ref(@job_application, @job_application_referral.email)
     
-    redirect_to :controller => 'jobs', :action => 'index', :apptracker_id => @job_application.apptracker_id
+    redirect_to :controller => 'jobs', :action => 'index', :apptracker_id => @job_application.apptracker_id, :notice => "Referral has been submitted."
   end
 
   def destroy
