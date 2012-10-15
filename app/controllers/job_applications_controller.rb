@@ -84,11 +84,13 @@ class JobApplicationsController < ApplicationController
     if @applicant.nil?
       redirect_to(new_applicant_url(:apptracker_id => @apptracker.id, :job_id => @job.id))
     else
-      @job_application = JobApplication.new(:job => @job, :applicant => @applicant)
-      @job_application_referral = @job_application.job_application_referrals.build()
-      respond_to do |format|
-        format.html # new.html.erb
-      end
+      @job_application = JobApplication.new(:job => @job, :applicant => @applicant, :apptracker_id => @apptracker.id)
+      #@job_application_referral = @job_application.job_application_referrals.build()
+      if @job_application.save(false)
+        redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in your referrals.")
+      else
+        render :action => "new"
+      end    
     end  
   end
 
@@ -214,16 +216,17 @@ class JobApplicationsController < ApplicationController
         job_app_file["job_application_id"] = @job_application.id
         @job_application_material = @job_application.job_application_materials.find :first
         materials = @job_application.job.application_material_types.split(',')
-        i = 1
-        materials.each do |amt|
-          unless params[:attachments].nil? || params[:attachments][i.to_s].nil? || params[:attachments][i.to_s]['file'].nil?
-            params[:attachments][i.to_s]['description'] = amt
-          end  
-          i = i + 1
-        end
-        
-        attachments = Attachment.attach_files(@job_application_material, params[:attachments])
-        render_attachment_warning_if_needed(@job_application_material)
+        unless materials.empty?
+          i = 1
+          materials.each do |amt|
+            unless params[:attachments].nil? || params[:attachments][i.to_s].nil? || params[:attachments][i.to_s]['file'].nil?
+              params[:attachments][i.to_s]['description'] = amt
+            end  
+            i = i + 1
+          end
+          attachments = Attachment.attach_files(@job_application_material, params[:attachments])
+          render_attachment_warning_if_needed(@job_application_material)
+        end  
         
         if @applicant.email == User.current.mail
           #Send Notification
@@ -234,7 +237,11 @@ class JobApplicationsController < ApplicationController
           format.html { redirect_to(job_url(@job_application.job_id, :apptracker_id => @job_application.apptracker_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
         else
           #if there are referrals required redirect to referral entry page
-          unless @job.referrer_count.nil? || @job.referrer_count == "0" || (@job_application.job_application_referrals.length < @job_application.job.referrer_count.to_i)
+          p "ref count"
+          p @job.referrer_count
+          p @job_application.job_application_referrals.length
+          p @job_application.job.referrer_count.to_i
+          unless @job.referrer_count.nil? || @job.referrer_count == "0" || (@job_application.job_application_referrals.length >= @job_application.job.referrer_count.to_i)
             format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Application has been updated. Please fill in your referrals.") }
           else  
             format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }

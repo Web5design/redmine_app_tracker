@@ -2,7 +2,8 @@ class JobApplicationReferral < ActiveRecord::Base
   unloadable
 
   # associations
-  belongs_to :job_application
+  belongs_to :job_applications
+  #belongs_to :applicant
   acts_as_attachable :delete_permission => :manage_documents
 
   # validations
