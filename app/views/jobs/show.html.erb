@@ -116,11 +116,18 @@ function toggle2() {
   <% unless @applicant.nil? %>
   
   	  <% @jobs = @applicant.job_applications.collect {|x| x.job_id } %>
+	<% @applicant.job_applications.each do |x| %>
+		<% if x.job_id == @job.id %>
+			<% @this_job = x %>
+		<% end %>	
+	<% end %>
   
   	  <!-- if the applicant has already applied to this job, do not show the "Apply" link -->
-	  <% unless @jobs.include?(@job.id) %>
+	  <% if @this_job.nil? %>
 	    <!-- go to job application -->
-		<%= link_to "Apply to this job", new_job_application_url(:apptracker_id => params[:apptracker_id], :job_id => @job.id, :user_id => User.current.id), :class => 'access-account' %>
+		<%= link_to "Apply to this job", new_job_application_url(:apptracker_id => params[:apptracker_id], :job_id => @job.id, :user_id => User.current.id) %>
+	  <% elsif @this_job.submission_status == "Not Submitted" %>
+		<%= link_to "Apply to this job", edit_job_application_url(@this_job, :apptracker_id => params[:apptracker_id], :job_id => @job.id, :user_id => User.current.id) %>  
 	  <% else %>
 	    You have already submitted an application for this job. To view what you've submitted, please go to the "My Job Applications" tab.
 	  <% end %>	
@@ -179,10 +186,18 @@ function toggle2() {
   <% @applicant = Applicant.find_by_email(User.current.mail) %>
   <% unless @applicant.nil? %>
     <% @jobs = @applicant.job_applications.collect {|x| x.job_id } %>
+
+	<% @applicant.job_applications.each do |x| %>
+		<% if x.job_id == @job.id %>
+			<% @this_job = x %>
+		<% end %>	
+	<% end %>
     <!-- if the applicant has already applied to this job, do not show the "Apply" link -->
-      <% unless @jobs.include?(@job.id) %>
-      <!-- go to job application -->
-	  <%= link_to "Apply to this job", new_job_application_url(:apptracker_id => params[:apptracker_id], :job_id => @job.id, :user_id => User.current.id) %>
+      <% if @this_job.nil? %>
+	    <!-- go to job application -->
+		<%= link_to "Apply to this job", new_job_application_url(:apptracker_id => params[:apptracker_id], :job_id => @job.id, :user_id => User.current.id) %>
+	  <% elsif @this_job.submission_status == "Not Submitted" %>
+		<%= link_to "Apply to this job", edit_job_application_url(@this_job, :apptracker_id => params[:apptracker_id], :job_id => @job.id, :user_id => User.current.id) %>
     <% else %>
       You have already submitted an application for this job. To view what you've submitted, please go to the "My Job Applications" tab.
     <% end %>	

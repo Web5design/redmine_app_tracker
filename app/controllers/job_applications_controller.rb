@@ -84,7 +84,7 @@ class JobApplicationsController < ApplicationController
     if @applicant.nil?
       redirect_to(new_applicant_url(:apptracker_id => @apptracker.id, :job_id => @job.id))
     else
-      @job_application = JobApplication.new(:job => @job, :applicant => @applicant, :apptracker_id => @apptracker.id)
+      @job_application = JobApplication.new(:job => @job, :applicant => @applicant, :apptracker_id => @apptracker.id, :submission_status => "Not Submitted")
       #@job_application_referral = @job_application.job_application_referrals.build()
       if @job_application.save(false)
         redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in your referrals.")
@@ -237,10 +237,6 @@ class JobApplicationsController < ApplicationController
           format.html { redirect_to(job_url(@job_application.job_id, :apptracker_id => @job_application.apptracker_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
         else
           #if there are referrals required redirect to referral entry page
-          p "ref count"
-          p @job.referrer_count
-          p @job_application.job_application_referrals.length
-          p @job_application.job.referrer_count.to_i
           unless @job.referrer_count.nil? || @job.referrer_count == "0" || (@job_application.job_application_referrals.length >= @job_application.job.referrer_count.to_i)
             format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Application has been updated. Please fill in your referrals.") }
           else  

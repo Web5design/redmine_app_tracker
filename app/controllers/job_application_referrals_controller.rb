@@ -29,13 +29,17 @@ class JobApplicationReferralsController < ApplicationController
 
     elsif(User.current.logged?)
       @applicant = Applicant.find_by_email(User.current.mail)
-      @job_applications = @applicant.job_applications
       @job_application_referral = Array.new
       
-      @job_applications.each do |ja|
-        @job_application_referral << ja.job_application_referrals.find(:all, :include => [:attachments])
+      if params[:job_application_id].nil?
+        @job_applications = @applicant.job_applications
+        @job_applications.each do |ja|
+          @job_application_referral << ja.job_application_referrals.find(:all, :include => [:attachments])
+        end
+        @job_application_referral.flatten!
+      else
+        @job_application_referral = JobApplication.find(params[:job_application_id]).job_application_referrals.find(:all, :include => [:attachments])
       end
-      @job_application_referral.flatten!
     end
   end
 
