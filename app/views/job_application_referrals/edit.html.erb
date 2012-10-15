@@ -6,42 +6,42 @@
   <%= jar.error_messages %>
   <%= jar.hidden_field(:job_application_id, :value => @job_application.id ) %>
   	<p>
-	<%= jar.label(:first_name) %><span class="required">*</span><br />
+	<%= jar.label(:first_name, "First Name") %><span class="required">*</span><br />
 	<%= jar.text_field(:first_name) %>
 	</p>
 	<p>
-	<%= jar.label(:last_name) %><span class="required">*</span><br />
+	<%= jar.label(:last_name, "Last Name") %><span class="required">*</span><br />
 	<%= jar.text_field(:last_name) %>
 	</p>
 	<p>
-  	<%= jar.label(:title) %><span class="required">*</span><br />
+  	<%= jar.label(:title, "Title") %><span class="required">*</span><br />
   	<%= jar.text_field(:title) %>
   	</p>
 	<p>
-  	<%= jar.label(:affiliation) %><span class="required">*</span><br />
+  	<%= jar.label(:affiliation, "Affiliation") %><span class="required">*</span><br />
   	<%= jar.text_field(:affiliation) %>
 	</p>
 	<p>
-  	<%= jar.label(:relationship) %><span class="required">*</span><br />
+  	<%= jar.label(:relationship, "Relationship") %><span class="required">*</span><br />
   	<%= jar.text_field(:relationship) %>
 	</p>
 	<p>
-  	<%= jar.label(:email) %><span class="required">*</span><br />
+  	<%= jar.label(:email, "Email") %><span class="required">*</span><br />
   	<%= jar.text_field(:email) %>
 	</p>
   	<p>
-  	<%= jar.label(:phone) %><br />
+  	<%= jar.label(:phone, "Phone") %><br />
   	<%= jar.text_field(:phone) %>
   	</p>
-		<p>
-	    <%= jar.label(:notes) %><br />
-	    <%= jar.text_field(:notes) %>
-	    </p>
-		<br />
-		<h3>Job Application Referral Attachments</h3>
-		<div class="box">
-			<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
-		</div>
+	<p>
+	<%= jar.label(:notes, "Notes") %><br />
+	<%= jar.text_field(:notes) %>
+	</p>
+	<br />
+	<h3>Job Application Referral Attachments</h3>
+	<div class="box">
+		<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
+	</div>
 
   <p>
     <%= jar.submit('Save') %>

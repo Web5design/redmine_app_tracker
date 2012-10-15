@@ -36,7 +36,7 @@
 		 	  <td style="width:10%"><%= jar.first_name %> <%= jar.last_name %></td>
 		      <td style="width:50%"><%= link_to_attachments jar %></td>
 		    <% else %>
-			  <td style="width:10%"></td>
+			  <td style="width:10%"><%= jar.first_name %> <%= jar.last_name %></td>
 		      <td style="width:50%">No Files</td>
 		    <% end %>	
 		  <% end %>
@@ -48,7 +48,7 @@
 			  <td style="width:10%"><%= jar.first_name %> <%= jar.last_name %></td>
 		      <td style="width:50%"><%= jar.referral_text %></td>
 		    <% else %>
-		      <td style="width:10%"></td>
+		      <td style="width:10%"><%= jar.first_name %> <%= jar.last_name %></td>
 		      <td style="width:50%">No Files</td>
 		    <% end %>		
 		    <td style="width:10%"><%= jar.created_at %></td>

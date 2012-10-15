@@ -60,7 +60,7 @@ class JobApplicationReferralsController < ApplicationController
     Notification.deliver_request_referral(@job_application, @job_application_referral.email, @job_application_referral)
     
     if @job_application.job_application_referrals.length < @job_application.job.referrer_count.to_i
-      redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in another referral.") }
+      redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in another referral.")
     else  
       redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Referral request has been submitted.")
     end 

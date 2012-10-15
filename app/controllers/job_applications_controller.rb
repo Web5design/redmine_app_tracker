@@ -225,14 +225,6 @@ class JobApplicationsController < ApplicationController
         attachments = Attachment.attach_files(@job_application_material, params[:attachments])
         render_attachment_warning_if_needed(@job_application_material)
         
-        unless params[:email].nil?
-          #send referrer emails
-          @emails = params[:email].split(',')
-          @emails.each do |email|
-            Notification.deliver_request_referral(@job_application, email)
-          end
-        end
-        
         if @applicant.email == User.current.mail
           #Send Notification
           Notification.deliver_application_updated(@job_application)
@@ -240,8 +232,13 @@ class JobApplicationsController < ApplicationController
         # no errors, redirect with success message
         if(User.current.admin? || @job_application.job.is_manager?)
           format.html { redirect_to(job_url(@job_application.job_id, :apptracker_id => @job_application.apptracker_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
-        else  
-          format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
+        else
+          #if there are referrals required redirect to referral entry page
+          unless @job.referrer_count.nil? || @job.referrer_count == "0" || (@job_application.job_application_referrals.length < @job_application.job.referrer_count.to_i)
+            format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Application has been updated. Please fill in your referrals.") }
+          else  
+            format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
+          end  
         end  
       else
         # validation prevented update; redirect to edit form with error messages
