@@ -207,6 +207,7 @@ class JobApplicationsController < ApplicationController
     @job = Job.find @job_application.job_id
     @apptracker = Apptracker.find(params[:job_application][:apptracker_id])
     @job_application_materials = @job_application.job_application_materials.find :all, :include => [:attachments]
+    @job_application[:submission_status] = "Submitted"
         
     # update the job_application's attributes, and indicate a message to the user opon success/failure
     respond_to do |format|
@@ -214,7 +215,12 @@ class JobApplicationsController < ApplicationController
         # attach files
         job_app_file = Hash.new
         job_app_file["job_application_id"] = @job_application.id
-        @job_application_material = @job_application.job_application_materials.find :first
+        if @job_application_materials.nil? || @job_application_materials.empty?
+          @job_application_material = @job_application.job_application_materials.build(job_app_file)
+          @job_application_material.save
+        else  
+          @job_application_material = @job_application.job_application_materials.find :first
+        end  
         materials = @job_application.job.application_material_types.split(',')
         unless materials.empty?
           i = 1
@@ -226,7 +232,7 @@ class JobApplicationsController < ApplicationController
           end
           attachments = Attachment.attach_files(@job_application_material, params[:attachments])
           render_attachment_warning_if_needed(@job_application_material)
-        end  
+        end    
         
         if @applicant.email == User.current.mail
           #Send Notification

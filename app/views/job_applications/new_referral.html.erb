@@ -10,7 +10,7 @@
 
 <p>We will include the application deadline in our automated email to your reference, however you may wish to reinforce the application deadline with them as well.  Should your references not submit letters by the application deadline, we will still be able to view other portions of your application; however, we most strongly recommend and request that your letters are received by deadline so that we are able to give your application a comprehensive review.</p>
 
-<p><%= @job_application.job_application_referrals.length %> of <%= @job_application.job.referrer_count.to_i %></p>
+<h3>Reference <%= @job_application.job_application_referrals.length %> of <%= @job_application.job.referrer_count.to_i %></h3>
     <span class="required">*</span> Required Fields
 	<% form_for(@job_application_referral, :html => {:multipart => true}) do |jar| %>
 	  <%= jar.error_messages %>
