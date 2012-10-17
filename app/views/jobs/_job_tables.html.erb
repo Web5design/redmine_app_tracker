@@ -55,7 +55,7 @@
           <td><%= link_to "#{job.title}", job_url(job.id, :apptracker_id => params[:apptracker_id]) %></a></td>
           <td><%=h job.category %></a></td>
           <td><%= textilizable job.short_desc %></td>
-		  <td><%=h job.display_deadline %> ET</td>
+		  <td><%=h job.display_deadline %></td>
         <% end %>
       <% end %>
     </tr>
