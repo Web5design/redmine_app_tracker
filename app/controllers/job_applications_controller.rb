@@ -240,6 +240,11 @@ class JobApplicationsController < ApplicationController
       		    uploaded << jam_file.description
       		  end  
       	  end
+      	  uploaded.uniq!
+      	  
+      	  p "materials"
+      	  p uploaded
+      	  p materials
       	  if uploaded.sort == materials.sort
       	    upload_error = false
       	  else
