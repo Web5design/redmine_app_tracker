@@ -241,13 +241,11 @@ class JobApplicationsController < ApplicationController
       		  end  
       	  end
       	  uploaded.uniq!
-      	  
-      	  p "materials"
-      	  p uploaded
-      	  p materials
+
+      	  upload_error = false
       	  if uploaded.sort == materials.sort
       	    upload_error = false
-      	  else
+      	  elsif uploaded.sort != materials.sort
       	    upload_error = true  
       	  end
       	end
