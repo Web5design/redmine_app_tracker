@@ -240,19 +240,18 @@ class JobApplicationsController < ApplicationController
       		    uploaded << jam_file.description
       		  end  
       	  end
-      	  uploaded.uniq!
 
       	  upload_error = false
-      	  if uploaded.sort == materials.sort
-      	    upload_error = false
-      	  elsif uploaded.sort != materials.sort
-      	    upload_error = true  
+      	  materials.each do |material|
+      	    if !uploaded.include?(material)
+      	      upload_error = true
+      	    end  
       	  end
       	end
       	
       	if upload_error == true
       	  # validation prevented update; redirect to edit form with error messages
-      	  flash[:error] = "Please upload all required materials. You will need to re-upload all documents. #{uploaded.sort} - #{materials.sort} - #{upload_error}"
+      	  flash[:error] = "Please upload all required materials. You will need to re-upload all documents."
           format.html { render :action => "edit" }
         else
           if @applicant.email == User.current.mail
