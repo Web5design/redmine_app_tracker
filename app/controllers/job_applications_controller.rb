@@ -87,7 +87,7 @@ class JobApplicationsController < ApplicationController
       @job_application = JobApplication.new(:job => @job, :applicant => @applicant, :apptracker_id => @apptracker.id, :submission_status => "Not Submitted")
       #@job_application_referral = @job_application.job_application_referrals.build()
       if @job_application.save(false)
-        redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in your referrals.")
+        redirect_to(new_referral_job_applications_url(:job_application => @job_application.id, :apptracker_id => @apptracker.id), :notice => "Please fill in your referrals.")
       else
         render :action => "new"
       end    
@@ -144,7 +144,7 @@ class JobApplicationsController < ApplicationController
         @job_application.update_attributes(params[:job_application])
         @job_application[:submission_status] = "Submitted"
         if(@job_application.save)
-          # #if job application saved then create the job application material
+          #if job application saved then create the job application material
           job_app_file = Hash.new
           job_app_file["job_application_id"] = @job_application.id
           @job_application_material = @job_application.job_application_materials.build(job_app_file)
@@ -160,7 +160,7 @@ class JobApplicationsController < ApplicationController
           flash[:notice] = l(:notice_successful_create)
           #if there are referrals required redirect to referral entry page
           unless @job.referrer_count.nil? || @job.referrer_count == "0"
-            format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Application has been created. Please fill in your referrals.") }
+            format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id, :apptracker_id => @apptracker.id), :notice => "Application has been created. Please fill in your referrals.") }
           else  
             format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Application has been submitted.") }
           end  
@@ -231,23 +231,42 @@ class JobApplicationsController < ApplicationController
             i = i + 1
           end
           attachments = Attachment.attach_files(@job_application_material, params[:attachments])
-          render_attachment_warning_if_needed(@job_application_material)
-        end    
+          render_attachment_warning_if_needed(@job_application_material)    
         
-        if @applicant.email == User.current.mail
-          #Send Notification
-          Notification.deliver_application_updated(@job_application)
-        end  
-        # no errors, redirect with success message
-        if(User.current.admin? || @job_application.job.is_manager?)
-          format.html { redirect_to(job_url(@job_application.job_id, :apptracker_id => @job_application.apptracker_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
+          @job_application_materials = @job_application.job_application_materials.find :all, :include => [:attachments]
+          uploaded = Array.new
+          @job_application_materials.each do |jam|
+      		  jam.attachments.each do |jam_file|
+      		    uploaded << jam_file.description
+      		  end  
+      	  end
+      	  if uploaded.sort == materials.sort
+      	    upload_error = false
+      	  else
+      	    upload_error = true  
+      	  end
+      	end
+      	
+      	if upload_error
+      	  # validation prevented update; redirect to edit form with error messages
+      	  flash[:error] = "Please upload all required materials. You will need to re-upload all documents."
+          format.html { render :action => "edit" }
         else
-          #if there are referrals required redirect to referral entry page
-          unless @job.referrer_count.nil? || @job.referrer_count == "0" || (@job_application.job_application_referrals.length >= @job_application.job.referrer_count.to_i)
-            format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Application has been updated. Please fill in your referrals.") }
-          else  
-            format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
+          if @applicant.email == User.current.mail
+            #Send Notification
+            Notification.deliver_application_updated(@job_application)
           end  
+          # no errors, redirect with success message
+          if(User.current.admin? || @job_application.job.is_manager?)
+            format.html { redirect_to(job_url(@job_application.job_id, :apptracker_id => @job_application.apptracker_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
+          else
+            #if there are referrals required redirect to referral entry page
+            unless @job.referrer_count.nil? || @job.referrer_count == "0" || (@job_application.job_application_referrals.length >= @job_application.job.referrer_count.to_i)
+              format.html { redirect_to(new_referral_job_applications_url(:job_application => @job_application.id, :apptracker_id => @apptracker.id), :notice => "Application has been updated. Please fill in your referrals.") }
+            else  
+              format.html { redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "#{@job_application.applicant.first_name} #{@job_application.applicant.last_name}\'s information has been updated.") }
+            end
+          end    
         end  
       else
         # validation prevented update; redirect to edit form with error messages

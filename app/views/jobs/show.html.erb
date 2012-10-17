@@ -154,7 +154,8 @@ function toggle2() {
 <p>
 <strong>Category:</strong> <%=h @job.category %><br />
 <br />
-<strong>Application Deadline:</strong> <%=h @job.submission_date.strftime("%m/%d/%Y") %> <%= @job.submission_date.strftime("%I:%M %p") %> ET<br />
+<strong>Application Deadline:</strong> <%= (User.current.admin? || @job.is_manager?) ? "#{@job.submission_date.strftime("%m/%d/%Y")} #{@job.submission_date.strftime("%I:%M %p")} ET" : "#{@job.display_deadline}" %>
+<br />
 <br />
 <% unless @job.application_material_types.nil? || @job.application_material_types.empty? %>	
   <strong>Application materials that will be uploaded into the system:</strong>
@@ -163,11 +164,10 @@ function toggle2() {
     <li><%=h amt %></li>
   <% end %>
   </ul>
-  <br />
 <% end %>
 
 <% unless @job.referrer_count == "0" %>
-<%=h @job.referrer_count %> reference(s) are required for this position.<br />
+<p><%=h @job.referrer_count %> reference(s) are required for this position.</p>
 <% end %>
 
 <strong>Description:</strong> <%= textilizable @job.description %><br />

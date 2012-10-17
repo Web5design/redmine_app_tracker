@@ -41,6 +41,10 @@ class Job < ActiveRecord::Base
   
   def is_manager?(usr=User.current)
     usr.member_of?(self.apptracker.project)
-  end  
+  end
+  
+  def display_deadline
+    return "#{(self.submission_date.to_date-30).strftime('%m/%d/%Y')} #{self.submission_date.strftime('%I:%M %p')} ET"
+  end    
 
 end
