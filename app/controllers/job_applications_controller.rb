@@ -250,9 +250,9 @@ class JobApplicationsController < ApplicationController
       	  end
       	end
       	
-      	if upload_error
+      	if upload_error == true
       	  # validation prevented update; redirect to edit form with error messages
-      	  flash[:error] = "Please upload all required materials. You will need to re-upload all documents. #{uploaded} #{materials}"
+      	  flash[:error] = "Please upload all required materials. You will need to re-upload all documents. #{uploaded.sort} - #{materials.sort} - #{upload_error}"
           format.html { render :action => "edit" }
         else
           if @applicant.email == User.current.mail
