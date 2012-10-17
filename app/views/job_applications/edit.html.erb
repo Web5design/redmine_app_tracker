@@ -61,7 +61,6 @@ document.observe("dom:loaded", function() {
 	    <%= link_to_attachments jam %><br />
 	  <% end %>  
 	<% else %>
-	  Once you have uploaded and submitted application materials you will find a list of them here.
 	  <% @job_application.job_application_materials.build() %>
 	<% end %>
 	
@@ -73,7 +72,7 @@ document.observe("dom:loaded", function() {
 		    <% f.fields_for :job_application_materials do |jam| %>
 			  <%= jam.hidden_field(:job_application_id, :value => @job_application.id ) %>
 			  <div class="box">
-				<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
+				<p><label><%=l(:label_attachment_plural)%></label><span class="required">*</span><%= render :partial => 'attachments/form' %></p>
 			  </div>
 		    <% end %>
 		  <% end %>
