@@ -64,7 +64,7 @@ class JobApplicationReferralsController < ApplicationController
     Notification.deliver_request_referral(@job_application, @job_application_referral.email, @job_application_referral)
     
     if @job_application.job_application_referrals.length < @job_application.job.referrer_count.to_i
-      redirect_to(new_referral_job_applications_url(:job_application => @job_application.id), :notice => "Please fill in another referral.")
+      redirect_to(new_referral_job_applications_url(:job_application => @job_application.id, :apptracker_id => @job_application.apptracker_id), :notice => "Please fill in another referral.")
     else  
       redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => %Q[<p>Your reference requests have been submitted. If you are ready to add in application information and upload your application materials, click <a href='#{url_for(edit_job_application_url(@job_application.id, :apptracker_id => @job_application.apptracker_id))}'>here</a> or the 'Edit Application' link below.</p><p>Do not worry if you are not yet ready to finish other parts of the application - you have until the application deadline to do so.</p><p>When you are ready to submit your other application materials, visit the <a href="https://cyber.law.harvard.edu/apply/jobs/7?apptracker_id=3">fellowship listing page</a>, log back into the Application Tracker, and click on the 'Apply to this job' link at the top of the page.</p>])
     end 
