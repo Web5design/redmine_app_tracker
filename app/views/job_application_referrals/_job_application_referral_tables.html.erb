@@ -1,29 +1,29 @@
-<table class="list">
-<thead>
-  <tr>
-    <% if(User.current.admin?)%>
-      <!-- Admin Role -->
-	  <th style="width:20%; text-align:left;">Application For</th>
-      <th style="width:10%; text-align:left;">Applicant</th>
-	  <th style="width:10%; text-align:left;">Referrer</th>
-	  <th style="width:50%; text-align:left;">File</th>
+<p><%= link_to "Enter Referral Information", new_referral_job_applications_path(:job_application => params[:job_application_id], :apptracker_id => @apptracker.id) %></p>
 
-    <% elsif (User.current.logged?)%>
-      <!-- Applicant Role -->
-	  <th style="width:20%; text-align:left;">Application For</th>
-	  <th style="width:10%; text-align:left;">Referrer</th>
-      <th style="width:10%; text-align:left;">Date Received</th>
-    <% else %>
-      <!-- Anonymous Role -->
-      <!-- No view for Anonymous -->
-
-    <% end %> 
-  </tr>
-</thead>
-<tbody>
-	<% if @job_application_referral.nil? %>
-	  no application referrals yet!
-	<% else %>  
+<% if @job_application_referral.nil? || @job_application_referral.empty? %>
+    No application referrals yet!
+<% else %>
+  <table class="list">
+  <thead>
+    <tr>
+      <% if(User.current.admin?)%>
+        <!-- Admin Role -->
+	    <th style="width:20%; text-align:left;">Application For</th>
+        <th style="width:10%; text-align:left;">Applicant</th>
+	    <th style="width:10%; text-align:left;">Referrer</th>
+	    <th style="width:50%; text-align:left;">File</th>
+      <% elsif (User.current.logged?)%>
+        <!-- Applicant Role -->
+	    <th style="width:20%; text-align:left;">Application For</th>
+	    <th style="width:10%; text-align:left;">Referrer</th>
+        <th style="width:10%; text-align:left;">Date Received</th>
+      <% else %>
+        <!-- Anonymous Role -->
+        <!-- No view for Anonymous -->
+      <% end %> 
+    </tr>
+  </thead>
+  <tbody>	  
   	  <% @job_application_referral.each do |jar| %>
         <tr>
         <% if(User.current.admin?)%>
