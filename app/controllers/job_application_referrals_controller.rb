@@ -109,4 +109,11 @@ class JobApplicationReferralsController < ApplicationController
     
     redirect_to(job_applications_url(:apptracker_id => @job_application.apptracker_id, :applicant_id => @job_application.applicant_id), :notice => "Referral request has been sent.")
   end
+  
+  def resend_referral
+    @job_application = JobApplication.find(params[:job_application])
+    @job_application_referral = JobApplicationReferral.find(params[:job_application_referral])
+    Notification.deliver_request_referral(@job_application, @job_application_referral.email, @job_application_referral)
+    redirect_to(job_application_referrals_url(:job_id => @job_application.job.id, :job_application_id => @job_application.id, :apptracker_id => @job_application.apptracker_id), :notice => "Referral request has been sent.")
+  end  
 end

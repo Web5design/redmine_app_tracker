@@ -9,7 +9,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :job_applications, :collection => {:view_table => [:get,:post], :new_referral => [:get,:post]}
   map.resources :job_attachments
   map.resources :job_custom_fields
-  map.resources :job_application_referrals, :collection => {:request_referral => [:get,:post]}
+  map.resources :job_application_referrals, :collection => {:request_referral => [:get,:post], :resend_referral => [:get,:post]}
   map.resources :job_application_materials, :collection => {:zip_files => [:get,:post]}
 
   # default routes
