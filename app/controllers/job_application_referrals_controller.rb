@@ -88,12 +88,19 @@ class JobApplicationReferralsController < ApplicationController
     
     attachments = Attachment.attach_files(@job_application_referral, params[:attachments])
     render_attachment_warning_if_needed(@job_application_referral)
+
+    unless attachments[:files].empty?
+      # Send email to applicant and referrer that referral has been submitted
+      Notification.deliver_referral_complete(@job_application, @job_application_referral.email)
+      Notification.deliver_referral_complete_to_ref(@job_application, @job_application_referral.email)
     
-    # Send email to applicant and referrer that referral has been submitted
-    Notification.deliver_referral_complete(@job_application, @job_application_referral.email)
-    Notification.deliver_referral_complete_to_ref(@job_application, @job_application_referral.email)
-    
-    redirect_to :controller => 'jobs', :action => 'index', :apptracker_id => @job_application.apptracker_id, :notice => "Referral has been submitted."
+      redirect_to :controller => 'jobs', :action => 'index', :apptracker_id => @job_application.apptracker_id, :notice => "Referral has been submitted."
+    else
+      flash[:error] = "Please upload a referral."
+      redirect_to :back
+      
+      #format.html { render :action => "edit" }
+    end    
   end
 
   def destroy
