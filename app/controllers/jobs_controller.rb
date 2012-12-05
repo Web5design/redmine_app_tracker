@@ -36,6 +36,7 @@ class JobsController < ApplicationController
   def show
     @job = Job.find(params[:id])
     @apptracker = @job.apptracker
+    @admin_view = params[:admin_view]
     
     session[:auth_source_registration] = nil
     @user = User.new(:language => Setting.default_language)

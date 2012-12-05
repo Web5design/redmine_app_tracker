@@ -246,6 +246,6 @@ th {
     border-width: 5px;
 }
 
-table th {
+table thead tr th {
 	text-align: left;
 }

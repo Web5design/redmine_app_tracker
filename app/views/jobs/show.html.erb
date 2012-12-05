@@ -42,7 +42,7 @@ function toggle2() {
 <%= render :partial => "shared/tabs" %>
 
 <strong>
-<% if User.current.admin? || @job.is_manager? %>
+<% if (User.current.admin? || @job.is_manager?) && @admin_view.nil? %>
   <% unless @job_applications.length == 0 %>
 	  <h3>Job Application Viewing Options</h3>
 	  <p>
@@ -110,7 +110,7 @@ function toggle2() {
   <% end %>	
   </p>
 
-<% elsif User.current.logged? %>
+<% elsif User.current.logged? || @admin_view == true  %>
 <span class="access-account">
   <% @applicant = Applicant.find_by_email(User.current.mail) %>
   <% unless @applicant.nil? %>

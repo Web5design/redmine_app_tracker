@@ -8,7 +8,9 @@
       <%= sort_header_tag('short_desc', :caption => 'Short Description') %>
       <%= sort_header_tag('job_status') %>
 	  <%= sort_header_tag('application_deadline') %>
+	  <th>Display Deadline</th>
       <th></th>
+	  <th></th>
 	  <th></th>
     <% elsif (User.current.logged?)%>
       <!-- Applicant scope -->
@@ -36,6 +38,8 @@
         <td><%= textilizable job.short_desc %></td>
         <td><%=h job.status %></td>
 		<td><%=h job.submission_date.month %>/<%=h job.submission_date.day %>/<%=h job.submission_date.year %> <%= job.submission_date.strftime("%I:%M %p") %> ET</td>
+		<td><%=h job.display_deadline %> ET</td>
+		<td><%= link_to 'View as Applicant', job_url(job.id, :apptracker_id => params[:apptracker_id], :admin_view => true), :class => 'icon icon-view' %></td>
         <td><%= link_to 'Edit', edit_job_url(job.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %></td>
         <td><%= link_to 'Delete', job_url(:id => job.id, :apptracker_id => params[:apptracker_id]), 
           :confirm => "All links to applicants will be destroyed.  Are you sure you want to delete the \"#{job.title}\" job?", 
