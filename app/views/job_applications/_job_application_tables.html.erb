@@ -7,7 +7,7 @@
 	    <% if(User.current.admin?)%>
 	      <!-- Admin Role -->
 		  <% if box %>
-		    <th style="width:10%; text-align:left;">Zip</th>
+		    <th style="width:3%; text-align:left;">Zip</th>
 		  <% end %>
 		  <th style="width:10%; text-align:left;">Job</th>
 	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
@@ -27,7 +27,7 @@
 		<% elsif @job_applications[0].job.is_manager?%>
 		  <!-- Manager Role -->
 		  <% if box %>
-		    <th style="width:10%; text-align:left;">Zip</th>
+		    <th style="width:3%; text-align:left;">Zip</th>
 		  <% end %>
 		  <th style="width:10%; text-align:left;">Job</th>
 	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
@@ -73,7 +73,7 @@
         <% if(User.current.admin?)%>
           <!-- Admin Role -->
           <% if box %>
-		    <td style="width:10%"><%= check_box_tag ("applicants_to_zip[]", ja.id, false, :class => 'check') %></td>
+		    <td style="width:3%"><%= check_box_tag ("applicants_to_zip[]", ja.id, false, :class => 'check') %></td>
 		  <% end %>
 		  <td style="width:10%"><%= link_to "#{ja.job.title}", job_url(ja.job.id, :apptracker_id => ja.apptracker_id) %></td>
           <td style="width:10%"><%= link_to "#{ja.applicant.first_name} #{ja.applicant.last_name}", applicant_url(ja.applicant.id, :apptracker_id => ja.apptracker_id) %></td>
@@ -93,7 +93,7 @@
 		<% elsif ja.job.is_manager? %>
 			<!-- Manager Role -->
 	          <% if box %>
-			    <td style="width:10%"><%= check_box_tag ("applicants_to_zip[]", ja.id, false, :class => 'check') %></td>
+			    <td style="width:3%"><%= check_box_tag ("applicants_to_zip[]", ja.id, false, :class => 'check') %></td>
 			  <% end %>
 			  <td style="width:10%"><%= link_to "#{ja.job.title}", job_url(ja.job.id, :apptracker_id => ja.apptracker_id) %></td>
 	          <td style="width:10%"><%= link_to "#{ja.applicant.first_name} #{ja.applicant.last_name}", applicant_url(ja.applicant.id, :apptracker_id => ja.apptracker_id) %></td>

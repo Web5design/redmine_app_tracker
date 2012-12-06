@@ -110,7 +110,7 @@ function toggle2() {
   <% end %>	
   </p>
 
-<% elsif User.current.logged? || @admin_view == true  %>
+<% elsif User.current.logged? || @admin_view == true %>
 <span class="access-account">
   <% @applicant = Applicant.find_by_email(User.current.mail) %>
   <% unless @applicant.nil? %>

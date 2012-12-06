@@ -520,7 +520,8 @@ class JobsController < ApplicationController
   		  @custom << custom_field.name
   		end
   	end
-  	@columns = @applicant_fields + @custom
+  	@statuses = ["submission_status","review_status","offer_status"]
+  	@columns = @applicant_fields + @custom + @statuses
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -538,6 +539,9 @@ class JobsController < ApplicationController
               row << show_value(cv)
             end  
           end
+        end
+        @statuses.each do |s|
+          row << ja.send(s)
         end  
         csv << row
       end 
