@@ -834,14 +834,17 @@ class JobsController < ApplicationController
   	
   	@job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    
     @custom = []
     unless @job_application_custom_fields.empty?
   		@job_application_custom_fields.each do |custom_field|
   		  @custom << custom_field.name
   		end
   	end
-  	@columns = @applicant_fields + @custom
+  	@statuses = ["submission_status","review_status","offer_status"]
+  	@columns = @applicant_fields + @custom + @statuses
   	@job_applications = []
+  	@applicants = []
   	unless params[:submission_status].blank?
   	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :submission_status => params[:submission_status]})
   	end
@@ -851,7 +854,16 @@ class JobsController < ApplicationController
   	unless params[:offer_status].blank?
   	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :offer_status => params[:offer_status]})
   	end 
+  	@applicant_fields.each do |af|
+  	  unless params["#{af}"].blank?
+  	    @applicants = Applicant.find(:all, :conditions => {"#{af}" => params["#{af}"]})
+  	    @applicants.each do |a|
+  	      @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :applicant_id => a.id})
+  	    end  
+  	  end  
+  	end  
   	@job_applications.flatten!
+  	@job_applications.uniq!
   end
   
   def export_filtered_to_csv

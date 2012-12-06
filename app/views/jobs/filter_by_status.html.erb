@@ -24,6 +24,14 @@
     <%= label_tag(:offer_status, "Offer Status") %><br />
     <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS)) %>
   </p>
+
+  <% @applicant_fields.each do |af| %>
+	<p>
+	  <%= label_tag("#{af}", "#{af}") %><br />
+	  <%= text_field_tag("#{af}") %>
+	</p>
+  <% end %>
+
   <%= submit_tag "Filter by Status" -%>
 <% end %>
 
@@ -54,9 +62,6 @@
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
 		  <% end %>
-		  <th style="text-align:left;">Submission Status</th>
-		  <th style="text-align:left;">Review Status</th>
-		  <th style="text-align:left;">Offer Status</th>
 	    </tr>	
 	  </thead>
 	  <tbody>
@@ -74,10 +79,10 @@
 			    <% end %>
 		      <% end %>
 			<% end %>
-		  <% end %>
-		  <td><%= ja.submission_status %></td>
-		  <td><%= ja.review_status %></td>
-		  <td><%= ja.offer_status %></td>
+			<% if @statuses.include?(column) %>
+		      <td><%= ja.send(column) %></td>
+		    <% end %>
+		  <% end %>  
 		</tr>
 		<% end %>
 	  </tbody>
