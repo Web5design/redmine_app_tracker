@@ -13,7 +13,7 @@ module CustomFieldsHelperPatch
       # Adds a job application tab to the user administration page
       def custom_fields_tabs_with_job_application_tab
         tabs = custom_fields_tabs_without_job_application_tab
-        tabs << {:name => 'JobApplicationCustomField', :partial => 'custom_fields/index', :label => 'Job Applications'}
+        tabs << {:name => 'JobApplicationCustomField', :partial => 'custom_fields/index', :label => :label_job_application_plural}
         return tabs
       end
     end
