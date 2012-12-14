@@ -521,9 +521,9 @@ class JobsController < ApplicationController
   		  @custom << custom_field.name
   		end
   	end
-  	@referral_fields = @referral_fields * @job.referrer_count.to_i
+  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
-  	@columns = @applicant_fields + @custom + @referral_fields + @statuses
+  	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -542,9 +542,11 @@ class JobsController < ApplicationController
             end  
           end
         end
-        @referral_fields.each do |rf|
-          referrals = ja.job_application_referrals
-          referrals.each do |r|
+        referrals = ja.job_application_referrals
+        p "referrals"
+        p referrals
+        referrals.each do |r|
+          @referral_fields.each do |rf|  
             row << r.send(rf)
           end  
         end
