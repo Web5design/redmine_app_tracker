@@ -311,13 +311,16 @@ class JobApplicationsController < ApplicationController
     @job_applications = @job.job_applications.find(:all, :order => sort_clause)
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @referral_fields = JobApplicationReferral.column_names - ["id", "job_application_id", "created_at", "updated_at"]
     @custom = []
     unless @job_application_custom_fields.empty?
   		@job_application_custom_fields.each do |custom_field|
   		  @custom << custom_field.name
   		end
   	end
-  	@columns = @applicant_fields + @custom
+  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
+  	@statuses = ["submission_status","review_status","offer_status"]
+  	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
   end
   
 end

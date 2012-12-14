@@ -1,3 +1,7 @@
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'assets', :plugin => 'redmine_app_tracker' %>
+<% end %>
+
 <% flash[:notice] %>
 <div class="contextual">
   <%= link_to 'Back', job_url(params[:job_id], :apptracker_id => params[:apptracker_id]), :class => 'icon icon-history' %>
@@ -7,15 +11,13 @@
 <% unless @job_applications.nil? %>
 	<p></p>
 	<h3>Submitted Applications - Total <%= @job_applications.length %></h3>
-	<table class="list">
-	  <thead>
+	<table id="list_table">
+	  <thead class="list_table-first">
 	    <tr>
 		  <th style="text-align:left;"></th>
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
 		  <% end %>
-		  <%= sort_header_tag('Review Status') %>
-		  <%= sort_header_tag('Offer Status') %>
 	    </tr>	
 	  </thead>
 	  <tbody>
@@ -32,8 +34,15 @@
 			  <% end %>
 		    <% end %>
 		  <% end %>
-		  <td><%=h ja.review_status %></td>
-		  <td><%=h ja.offer_status %></td>
+		  <% referrals = ja.job_application_referrals %>
+  		  <% referrals.each do |r| %>
+    	    <% @referral_fields.each do |rf| %>
+      	      <td><%= r.send(rf) %></td>
+    		<% end %>
+  		  <% end %>
+		  <% @statuses.each do |s| %>
+		    <td><%= ja.send(s) %></td>
+		  <% end %>
 		</tr>
 		<% end %>
 	  </tbody>

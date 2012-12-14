@@ -543,8 +543,6 @@ class JobsController < ApplicationController
           end
         end
         referrals = ja.job_application_referrals
-        p "referrals"
-        p referrals
         referrals.each do |r|
           @referral_fields.each do |rf|  
             row << r.send(rf)
@@ -574,13 +572,16 @@ class JobsController < ApplicationController
   	@job_application = JobApplication.new(:job => @job)
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @referral_fields = JobApplicationReferral.column_names - ["id", "job_application_id", "created_at", "updated_at"]
     @custom = []
     unless @job_application_custom_fields.empty?
   		@job_application_custom_fields.each do |custom_field|
   		  @custom << custom_field.name
   		end
   	end
-  	@columns = @applicant_fields + @custom
+  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
+  	@statuses = ["submission_status","review_status","offer_status"]
+  	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
     
     unless params[:filter].nil?
       @custom_fields = params[:filter][:custom_field_values]
@@ -844,15 +845,17 @@ class JobsController < ApplicationController
   	
   	@job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
-    
+    @referral_fields = JobApplicationReferral.column_names - ["id", "job_application_id", "created_at", "updated_at"]
+  	
     @custom = []
     unless @job_application_custom_fields.empty?
   		@job_application_custom_fields.each do |custom_field|
   		  @custom << custom_field.name
   		end
   	end
+  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
-  	@columns = @applicant_fields + @custom + @statuses
+  	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
   	@job_applications = []
   	@applicants = []
   	unless params[:submission_status].blank?
@@ -888,13 +891,16 @@ class JobsController < ApplicationController
     
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
+    @referral_fields = JobApplicationReferral.column_names - ["id", "job_application_id", "created_at", "updated_at"]
     @custom = []
     unless @job_application_custom_fields.empty?
   		@job_application_custom_fields.each do |custom_field|
   		  @custom << custom_field.name
   		end
   	end
-  	@columns = @applicant_fields + @custom + ['submission_status', 'review_status', 'offer_status']
+  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
+  	@statuses = ["submission_status","review_status","offer_status"]
+  	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -913,9 +919,15 @@ class JobsController < ApplicationController
             end  
           end
         end
-        row << ja.submission_status
-        row << ja.review_status
-        row << ja.offer_status  
+        referrals = ja.job_application_referrals
+        referrals.each do |r|
+          @referral_fields.each do |rf|  
+            row << r.send(rf)
+          end  
+        end
+        @statuses.each do |s|
+          row << ja.send(s)
+        end 
         csv << row
       end 
     end 

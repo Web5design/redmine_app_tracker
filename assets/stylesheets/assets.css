@@ -246,6 +246,35 @@ th {
     border-width: 5px;
 }
 
-table thead tr th {
+#list_table
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	width: 480px;
 	text-align: left;
+	border-collapse: collapse;
+}
+#list_table th
+{
+	font-size: 14px;
+	font-weight: normal;
+	padding: 5px 15px;
+	color: #039;
+}
+#list_table td
+{
+	padding: 10px 15px;
+	color: #669;
+	border-top: 1px solid #e8edff;
+}
+.list_table-first
+{
+	background: #d0dafd;
+	border-right: 10px solid transparent;
+	border-left: 10px solid transparent;
+}
+#list_table tr:hover td
+{
+	color: #339;
+	background: #eff2ff;
 }
