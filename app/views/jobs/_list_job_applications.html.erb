@@ -34,7 +34,7 @@
 	  <tbody>
 		<% @job_applications.each do |ja| %>
 		<tr>
-		  <td><%= link_to "View", job_application_path(ja, :apptracker_id => @apptracker.id), {:title => "Application will open in new tab/window."}, :target => "_blank" %></td>	
+		  <td><%= link_to "View", job_application_path(ja, :apptracker_id => @apptracker.id), {:title => "Application will open in new tab/window.", :target => "_blank"} %></td>	
 		  
 		    <% @applicant_fields.each do |af| %>
 	          <td><%= ja.applicant.send(af) %></td>
