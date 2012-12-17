@@ -593,7 +593,7 @@ class JobsController < ApplicationController
       @custom_fields.each_key do |field_id|
         unless @custom_fields[field_id].nil? || @custom_fields[field_id].empty?
           value_count = value_count + 1
-          @custom_values += CustomValue.find(:all, :conditions => ["custom_field_id = ? and value like ?", field_id, "%#{@custom_fields[field_id]}%"])
+          @custom_values += CustomValue.find(:all, :conditions => ["custom_field_id = ? and value ILIKE ?", field_id, "%#{@custom_fields[field_id]}%"])
         end  
       end
       job_app_ids = @custom_values.collect {|x| x.customized_id}
@@ -620,7 +620,7 @@ class JobsController < ApplicationController
   	end 
   	@applicant_fields.each do |af|
   	  unless params["#{af}"].blank?
-  	    @applicants = Applicant.find(:all, :conditions => {"#{af}" => params["#{af}"]})
+  	    @applicants = Applicant.find(:all, :conditions => ["#{af} ILIKE ?", "%#{params["#{af}"]}%"])
   	    @applicants.each do |a|
   	      @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :applicant_id => a.id})
   	    end  
