@@ -42,7 +42,11 @@ Job Title: <%= link_to Job.find(@job_application.job_id).title, job_path(@job_ap
 		    <p>
 		      Name: <%= jar.first_name %> <%= jar.last_name %><br />
 		      Email: <%= jar.email %><br />
+			  Phone: <%= jar.phone %><br />
 		      Title: <%= jar.title %><br />
+			  Affiliation: <%= jar.affiliation %><br />
+			  Relationship: <%= jar.relationship %><br />
+			  Referral Text: <%= jar.referral_text %><br />
 		      Notes: <%= jar.notes %><br />
 		      <%= link_to_attachments jar %>
 		    </p>

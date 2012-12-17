@@ -1,3 +1,44 @@
+<script language="javascript">
+function toggle() {
+	var ele = document.getElementById("toggleText");
+	var text = document.getElementById("displayText");
+	if(ele.style.display == "block") {
+    		ele.style.display = "none";
+			text.innerHTML = "&rarr; By Status";
+  	}
+	else {
+		ele.style.display = "block";
+		text.innerHTML = "&darr; By Status";
+	}
+} 
+
+function toggle2() {
+	var ele = document.getElementById("toggleText2");
+	var text = document.getElementById("displayText2");
+	if(ele.style.display == "block") {
+    		ele.style.display = "none";
+			text.innerHTML = "&rarr; By Applicant Fields";
+  	}
+	else {
+		ele.style.display = "block";
+		text.innerHTML = "&darr; By Applicant Fields";
+	}
+}
+
+function toggle3() {
+	var ele = document.getElementById("toggleText3");
+	var text = document.getElementById("displayText3");
+	if(ele.style.display == "block") {
+    		ele.style.display = "none";
+			text.innerHTML = "&rarr; By Application Fields";
+  	}
+	else {
+		ele.style.display = "block";
+		text.innerHTML = "&darr; By Application Fields";
+	}
+}
+</script>
+
 <% flash[:notice] %>
 <div class="contextual">
   <%= link_to 'Back', job_url(params[:job_id], :apptracker_id => params[:apptracker_id]), :class => 'icon icon-history' %>
@@ -6,20 +47,50 @@
 
 <%= render :partial => "shared/tabs" %>
 
-<h3>Filter Job Applications by Application Fields</h3>
-<p>The filter will be applied to all applications that match <strong>all</strong> of the options you choose.</p>
+<h3>Filter Job Applications</h3>
+<p>The filter will be applied to all applications that match <strong>any</strong> of the options you choose.</p>
 
 <% form_tag({:controller => 'jobs', :action => 'filter'}) do %>
   <% job_fields = @job_application_custom_fields.collect {|x| x.id} %>
   <%= hidden_field_tag :job_id, @job.id %>
   <%= hidden_field_tag :apptracker_id, @apptracker.id %>
-  <% unless job_fields.nil? || job_fields.empty? %>
-    <% @job_application.custom_field_values.each do |value| %>
-	  <% if job_fields.include? value.custom_field_id %>
-		<p><%= custom_field_tag_with_label :filter, value %></p>
-	  <% end %>
-    <% end -%>
-  <% end %>
+  <h4><a id="displayText" href="javascript:toggle();">&rarr; By Status</a></h4>
+  <div id ="toggleText" style="display: none">
+	<p>
+	  <%= label_tag(:submission_status, "Submission Status") %><br />
+	  <%= select_tag(:submission_status, options_for_select(JobApplication::SUBMISSION_STATUS)) %>
+	</p>
+	<p>
+	  <%= label_tag(:review_status, "Review Status") %><br />
+	  <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS)) %>
+	</p>
+	<p>
+	  <%= label_tag(:offer_status, "Offer Status") %><br />
+	  <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS)) %>
+	</p>
+  </div>
+
+  <h4><a id="displayText2" href="javascript:toggle2();">&rarr; By Applicant Fields</a></h4>
+  <div id ="toggleText2" style="display: none">
+    <% @applicant_fields.each do |af| %>
+	  <p>
+	    <%= label_tag("#{af}", "#{af}") %><br />
+	    <%= text_field_tag("#{af}") %>
+	  </p>
+    <% end %>
+  </div>
+
+  <h4><a id="displayText3" href="javascript:toggle3();">&rarr; By Application Fields</a></h4>
+  <div id ="toggleText3" style="display: none">
+    <% unless job_fields.nil? || job_fields.empty? %>
+      <% @job_application.custom_field_values.each do |value| %>
+	    <% if job_fields.include? value.custom_field_id %>
+		  <p><%= custom_field_tag_with_label :filter, value %></p>
+	    <% end %>
+      <% end -%>
+    <% end %>
+  </div>
+
   <%= submit_tag "Filter" -%>
 <% end %>
 

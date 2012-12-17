@@ -582,6 +582,8 @@ class JobsController < ApplicationController
   	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
   	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
+    @job_applications = []
+    @applicants = []
     
     unless params[:filter].nil?
       @custom_fields = params[:filter][:custom_field_values]
@@ -605,9 +607,27 @@ class JobsController < ApplicationController
           job_app_ids.delete(app_id)
         end  
       end 
-      
       @job_applications = JobApplication.find(:all, :conditions => ["job_id = ? and id in (?)", params[:job_id], job_app_ids])
-    end   
+    end  
+    unless params[:submission_status].blank?
+  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :submission_status => params[:submission_status]})
+  	end
+  	unless params[:review_status].blank?
+  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :review_status => params[:review_status]})
+  	end 
+  	unless params[:offer_status].blank?
+  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :offer_status => params[:offer_status]})
+  	end 
+  	@applicant_fields.each do |af|
+  	  unless params["#{af}"].blank?
+  	    @applicants = Applicant.find(:all, :conditions => {"#{af}" => params["#{af}"]})
+  	    @applicants.each do |a|
+  	      @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :applicant_id => a.id})
+  	    end  
+  	  end  
+  	end  
+  	@job_applications.flatten!
+  	@job_applications.uniq! 
   end
   
   def zip_filtered
