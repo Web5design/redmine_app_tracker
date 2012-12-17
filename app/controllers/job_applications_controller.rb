@@ -318,7 +318,7 @@ class JobApplicationsController < ApplicationController
   		  @custom << custom_field.name
   		end
   	end
-  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
+  	@referral_fields_cols = (@referral_fields + ["Referral Doc"]) * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
   	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
   end

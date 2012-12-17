@@ -300,7 +300,7 @@ class JobsController < ApplicationController
           jar.each do |ref|
             ref.attachments.each do |jara|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{material_id_hash[jara.description]}_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
               
               orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
               if File.exists?(orig_file_path)
@@ -308,7 +308,7 @@ class JobsController < ApplicationController
                 if zipfile.find_entry(new_file_name)
                   zipfile.remove(new_file_name)
                 end
-                zipfile.get_output_stream("#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}/" + new_file_name) do |f|
+                zipfile.get_output_stream("#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).id}/" + new_file_name) do |f|
                   input = File.open(orig_file_path)
                   data_to_copy = input.read()
                   f.write(data_to_copy)
@@ -441,7 +441,7 @@ class JobsController < ApplicationController
             jar.each do |ref|
               ref.attachments.each do |jara|
                 ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-                new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+                new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
               
                 orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
                 if File.exists?(orig_file_path)
@@ -542,15 +542,9 @@ class JobsController < ApplicationController
             end  
           end
         end
-        referrals = ja.job_application_referrals
-        referrals.each do |r|
-          @referral_fields.each do |rf|  
-            row << r.send(rf)
-          end  
-        end
         @statuses.each do |s|
           row << ja.send(s)
-        end  
+        end
         csv << row
       end 
     end 
@@ -579,7 +573,7 @@ class JobsController < ApplicationController
   		  @custom << custom_field.name
   		end
   	end
-  	@referral_fields_cols = @referral_fields * @job.referrer_count.to_i
+  	@referral_fields_cols = (@referral_fields + ["Referral Doc"]) * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
   	@columns = @applicant_fields + @custom + @referral_fields_cols + @statuses
     @job_applications = []
@@ -713,7 +707,7 @@ class JobsController < ApplicationController
           jar.each do |ref|
             ref.attachments.each do |jara|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
 
               orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
               if File.exists?(orig_file_path)
@@ -721,7 +715,7 @@ class JobsController < ApplicationController
                 if zipfile.find_entry(new_file_name)
                   zipfile.remove(new_file_name)
                 end
-                zipfile.get_output_stream("#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}/" + new_file_name) do |f|
+                zipfile.get_output_stream("#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).id}/" + new_file_name) do |f|
                   input = File.open(orig_file_path)
                   data_to_copy = input.read()
                   f.write(data_to_copy)
@@ -822,7 +816,7 @@ class JobsController < ApplicationController
           jar.each do |ref|
             ref.attachments.each do |jara|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
 
               orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
               if File.exists?(orig_file_path)

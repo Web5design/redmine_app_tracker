@@ -1,6 +1,7 @@
 <% if @job_applications.nil? || @job_applications.empty? %>
   no applications yet!
 <% else %>
+    <p>* When clicking on "View" below, application will open in a new tab/window to preserve filtered search.</p>
 	<table class="list">
 	<thead>
 	  <tr>
@@ -83,7 +84,7 @@
 		  <td style="width:10%"><%= ja.review_status %></td>
 		  <td style="width:10%"><%= ja.offer_status %></td>
  		  <td style="width:5%"><%= ja.notes.nil? || ja.notes.blank? ? 'No' : 'Yes' %></td>
-		  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
+		  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), {:class => 'icon icon-view', :target => "_blank"} %></td>
 		  <td style="width:5%"><%= link_to 'Add Notes', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
           <td style="width:5%"><%= link_to 'Delete', job_application_url(:id => ja.id), 
             :confirm => "Are you sure you want to delete #{ja.applicant.first_name} #{ja.applicant.last_name}\'s record?", 
@@ -103,7 +104,7 @@
 			  <td style="width:10%"><%= ja.review_status %></td>
 			  <td style="width:10%"><%= ja.offer_status %></td>
 	 		  <td style="width:5%"><%= ja.notes.nil? || ja.notes.blank? ? 'No' : 'Yes' %></td>
-			  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-view' %></td>
+			  <td style="width:5%"><%= link_to 'View', job_application_url(ja.id, :apptracker_id => ja.apptracker_id), {:class => 'icon icon-view', :target => "_blank"} %></td>
 			  <td style="width:5%"><%= link_to 'Add Notes', edit_job_application_url(ja.id, :apptracker_id => ja.apptracker_id), :class => 'icon icon-edit' %></td>
         <% elsif (User.current.logged?)%>
           <!-- Applicant Role -->

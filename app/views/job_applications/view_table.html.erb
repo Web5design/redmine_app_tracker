@@ -14,16 +14,17 @@
 	<table id="list_table">
 	  <thead class="list_table-first">
 	    <tr>
-		  <th style="text-align:left;"></th>
+		  <th style="text-align:left;">View Application</th>
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
 		  <% end %>
+		  <th style="text-align:left;">Application Materials</th>
 	    </tr>	
 	  </thead>
 	  <tbody>
 		<% @job_applications.each do |ja| %>
 		<tr>
-		  <td><%= link_to "View", job_application_path(ja) %></td>	
+		  <td><h3><%= link_to "View", job_application_path(ja) %></h3></td>	
 		  <% @applicant_fields.each do |af| %>
 	        <td><%= ja.applicant.send(af) %></td>
 	      <% end %>
@@ -34,16 +35,26 @@
 			  <% end %>
 		    <% end %>
 		  <% end %>
-		  <% referrals = ja.job_application_referrals %>
+		  <% referrals = ja.job_application_referrals.find :all, :include => [:attachments] %>
   		  <% referrals.each do |r| %>
     	    <% @referral_fields.each do |rf| %>
       	      <td><%= r.send(rf) %></td>
     		<% end %>
+			<td><%= link_to_attachments r %></td>
   		  <% end %>
 		  <% @statuses.each do |s| %>
 		    <td><%= ja.send(s) %></td>
 		  <% end %>
-		</tr>
+		  <% @job_application_materials = ja.job_application_materials.find :all, :include => [:attachments] %>
+		  <td>
+		  <% unless @job_application_materials.nil? || @job_application_materials.blank? %>
+		    <% @job_application_materials.each do |jam| %>
+		      <%= link_to_attachments jam %><br />
+		    <% end %>
+	      <% else %>
+			  None
+		  <% end %>
+		  </td>
 		<% end %>
 	  </tbody>
 	</table>
