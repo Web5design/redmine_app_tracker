@@ -104,6 +104,22 @@ class JobApplicationReferralsController < ApplicationController
   end
 
   def destroy
+    @job_application_referral = JobApplicationReferral.find(params[:id])
+    @job_application = JobApplication.find(@job_application_referral.job_application_id)
+    @applicant = Applicant.find(@job_application.applicant_id)
+	  unless User.current.admin? || @applicant.email == User.current.mail
+	    flash[:error] = "You are not authorized to view this section."
+		  redirect_to('/') and return
+	  end
+    @apptracker = Apptracker.find(@job_application.apptracker_id)
+    
+    # destroy the job_application_referral, and indicate a message to the user upon success/failure
+    @job_application_referral.destroy ? flash[:notice] = "#{@applicant.first_name} #{@applicant.last_name}\'s referral has been deleted." : flash[:error] = "Error: #{@applicant.first_name} #{@applicant.last_name}\'s referral could not be deleted."
+    
+    respond_to do |format|
+      format.html { redirect_to(job_application_url(@job_application, :apptracker_id => @apptracker.id)) }
+    end
+    
   end
 
   def request_referral

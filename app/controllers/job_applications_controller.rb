@@ -280,7 +280,6 @@ class JobApplicationsController < ApplicationController
   # DELETE /job_applications/1
   # DELETE job_application_url(:id => 1)
   def destroy
-    # create a job_application in the context of its parent applicant
     @job_application = JobApplication.find(params[:id])
     @applicant = Applicant.find(@job_application.applicant_id)
 	unless User.current.admin? || @applicant.email == User.current.mail

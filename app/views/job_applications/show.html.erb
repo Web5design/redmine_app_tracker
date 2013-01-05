@@ -52,7 +52,8 @@ Job Title: <%= link_to Job.find(@job_application.job_id).title, job_path(@job_ap
 		    </p>
 			<% if User.current.admin? %>
 			  <p>
-				  <%= link_to 'Edit/Upload Referral', edit_job_application_referral_url(jar.id, :job_app_id => @job_application.id, :apptracker_id => @job_application.apptracker_id), {:class => 'icon icon-edit', :target => "_blank"} %>
+				  <%= link_to 'Edit/Upload Referral', edit_job_application_referral_url(jar.id, :job_app_id => @job_application.id, :apptracker_id => @job_application.apptracker_id), {:class => 'icon icon-edit', :target => "_blank"} %> | 
+				  <%= link_to 'DELETE Referral', job_application_referral_url(:id => jar.id), :confirm => "Are you sure you want to delete this referral?", :method => :delete, :class => 'icon icon-del' %>
 			  </p>  
 			<% end %>	  
 		  <% end %>
