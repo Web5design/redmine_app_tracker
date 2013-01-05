@@ -50,6 +50,11 @@ Job Title: <%= link_to Job.find(@job_application.job_id).title, job_path(@job_ap
 		      Notes: <%= jar.notes %><br />
 		      <%= link_to_attachments jar %>
 		    </p>
+			<% if User.current.admin? %>
+			  <p>
+				  <%= link_to 'Edit/Upload Referral', edit_job_application_referral_url(jar.id, :job_app_id => @job_application.id, :apptracker_id => @job_application.apptracker_id), {:class => 'icon icon-edit', :target => "_blank"} %>
+			  </p>  
+			<% end %>	  
 		  <% end %>
 		<% else %>
 		  No referrals.
