@@ -86,10 +86,14 @@ class JobApplicationsController < ApplicationController
     else
       @job_application = JobApplication.new(:job => @job, :applicant => @applicant, :apptracker_id => @apptracker.id, :submission_status => "Not Submitted")
       #@job_application_referral = @job_application.job_application_referrals.build()
-      if @job_application.save(false)
-        redirect_to(new_referral_job_applications_url(:job_application => @job_application.id, :apptracker_id => @apptracker.id), :notice => "Please fill in your referrals.")
-      else
-        render :action => "new"
+      if @job.referrer_count.to_i > 0
+        if @job_application.save(false)
+          redirect_to(new_referral_job_applications_url(:job_application => @job_application.id, :apptracker_id => @apptracker.id), :notice => "Please fill in your referrals.")
+        else
+         render :action => "new"
+        end
+      else  
+        render :action => "new"   
       end    
     end  
   end
