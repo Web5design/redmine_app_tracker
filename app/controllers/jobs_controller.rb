@@ -521,7 +521,7 @@ class JobsController < ApplicationController
   		  @custom << custom_field.name
   		end
   	end
-  	@referral_fields_cols = @referral_fields.collect {|x| "Referral " + x } * @job.referrer_count.to_i
+  	@referral_fields_cols = (@referral_fields.collect {|x| "Referral " + x } + ["Referral Doc"]) * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
   	
   	unless @job.application_material_types.nil? || @job.application_material_types.empty?
@@ -548,9 +548,17 @@ class JobsController < ApplicationController
         end
         referrals = ja.job_application_referrals
         referrals.each do |r|
+          material = Attachment.find(:all, :conditions => {:container_id => r.id})
           @referral_fields.each do |rf|  
             row << r.send(rf)
-          end  
+          end 
+          unless material.nil? || material.empty?
+            material.each do |m|
+  			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+  			    end
+  			  else
+  			    row << ""
+  			  end    
         end
         @statuses.each do |s|
           row << ja.send(s)
@@ -560,9 +568,13 @@ class JobsController < ApplicationController
     	    @materials.each do |amt|
     			  @job_application_materials.each do |jam|
       			  material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})
-      			  material.each do |m|
-      			    row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
-      			  end  
+      			  unless material.nil? || material.empty?
+      			    material.each do |m|
+      			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+      			    end 
+      			  else
+      			    row << ""
+      			  end   
     		    end
     			end
     		end
@@ -933,7 +945,7 @@ class JobsController < ApplicationController
   		  @custom << custom_field.name
   		end
   	end
-  	@referral_fields_cols = @referral_fields.collect {|x| "Referral " + x } * @job.referrer_count.to_i
+  	@referral_fields_cols = (@referral_fields.collect {|x| "Referral " + x } + ["Referral Doc"]) * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
   	unless @job.application_material_types.nil? || @job.application_material_types.empty?
 		  @materials = @job.application_material_types.split(',')  
@@ -959,21 +971,33 @@ class JobsController < ApplicationController
         end
         referrals = ja.job_application_referrals
         referrals.each do |r|
+          material = Attachment.find(:all, :conditions => {:container_id => r.id})
           @referral_fields.each do |rf|  
             row << r.send(rf)
-          end  
+          end 
+          unless material.nil? || material.empty?
+            material.each do |m|
+  			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+  			    end
+  			  else
+  			    row << ""
+  			  end    
         end
         @statuses.each do |s|
           row << ja.send(s)
-        end 
+        end
         @job_application_materials = ja.job_application_materials.find :all, :include => [:attachments]
         unless @job_application_materials.nil? || @job_application_materials.blank?
     	    @materials.each do |amt|
     			  @job_application_materials.each do |jam|
       			  material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})
-      			  material.each do |m|
-      			    row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
-      			  end  
+      			  unless material.nil? || material.empty?
+      			    material.each do |m|
+      			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+      			    end 
+      			  else
+      			    row << ""
+      			  end   
     		    end
     			end
     		end
