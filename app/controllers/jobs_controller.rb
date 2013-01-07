@@ -523,7 +523,11 @@ class JobsController < ApplicationController
   	end
   	@referral_fields_cols = @referral_fields.collect {|x| "Referral " + x } * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
-  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses
+  	
+  	unless @job.application_material_types.nil? || @job.application_material_types.empty?
+		  @materials = @job.application_material_types.split(',')  
+		end
+  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -542,9 +546,26 @@ class JobsController < ApplicationController
             end  
           end
         end
+        referrals = ja.job_application_referrals
+        referrals.each do |r|
+          @referral_fields.each do |rf|  
+            row << r.send(rf)
+          end  
+        end
         @statuses.each do |s|
           row << ja.send(s)
         end
+        @job_application_materials = ja.job_application_materials.find :all, :include => [:attachments]
+        unless @job_application_materials.nil? || @job_application_materials.blank?
+    	    @materials.each do |amt|
+    			  @job_application_materials.each do |jam|
+      			  material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})
+      			  material.each do |m|
+      			    row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+      			  end  
+    		    end
+    			end
+    		end
         csv << row
       end 
     end 
@@ -914,7 +935,10 @@ class JobsController < ApplicationController
   	end
   	@referral_fields_cols = @referral_fields.collect {|x| "Referral " + x } * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
-  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses
+  	unless @job.application_material_types.nil? || @job.application_material_types.empty?
+		  @materials = @job.application_material_types.split(',')  
+		end
+  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -942,6 +966,17 @@ class JobsController < ApplicationController
         @statuses.each do |s|
           row << ja.send(s)
         end 
+        @job_application_materials = ja.job_application_materials.find :all, :include => [:attachments]
+        unless @job_application_materials.nil? || @job_application_materials.blank?
+    	    @materials.each do |amt|
+    			  @job_application_materials.each do |jam|
+      			  material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})
+      			  material.each do |m|
+      			    row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+      			  end  
+    		    end
+    			end
+    		end
         csv << row
       end 
     end 

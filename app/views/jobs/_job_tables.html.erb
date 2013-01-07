@@ -46,7 +46,7 @@
           :method => :delete,
           :class => 'icon icon-del' %>
         </td>
-      <% elsif job.status != 'inactive' %> 
+      <% elsif job.status != 'Inactive' %> 
         <% if User.current.logged? %>
           <!-- Applicant scope -->
           <td><%= link_to "#{job.title}", job_url(job.id, :apptracker_id => params[:apptracker_id]) %></td>
