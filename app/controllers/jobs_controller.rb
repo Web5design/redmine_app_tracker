@@ -510,7 +510,7 @@ class JobsController < ApplicationController
   	end
     @applicants = @job.applicants
     @job_applications = @job.job_applications
-    @file_name = @job.title.gsub(/ /, '-')
+    @file_name = @job.title.gsub(/ /, '-').gsub(/,/, '-')
     
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
@@ -934,7 +934,7 @@ class JobsController < ApplicationController
   	end
   	@job_applications = JobApplication.find(:all, :conditions => ["id in (?)", params[:job_app_ids]])
   	
-    @file_name = @job.title.gsub(/ /, '-')
+    @file_name = @job.title.gsub(/ /, '-').gsub(/,/, '-')
     
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
