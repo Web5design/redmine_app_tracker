@@ -896,50 +896,6 @@ class JobsController < ApplicationController
     end  
   end 
   
-  def filter_by_status
-    @job = Job.find(params[:job_id])
-    @apptracker = Apptracker.find(params[:apptracker_id])
-    unless User.current.admin? || @job.is_manager?
-      flash[:error] = "You are not authorized to view this section."
-  		redirect_to('/') and return
-  	end
-  	
-  	@job_application_custom_fields = @job.all_job_app_custom_fields
-    @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
-    @referral_fields = JobApplicationReferral.column_names - ["id", "job_application_id", "created_at", "updated_at"]
-  	
-    @custom = []
-    unless @job_application_custom_fields.empty?
-  		@job_application_custom_fields.each do |custom_field|
-  		  @custom << custom_field.name
-  		end
-  	end
-  	@referral_fields_cols = @referral_fields.collect {|x| "Referral " + x } * @job.referrer_count.to_i
-  	@statuses = ["submission_status","review_status","offer_status"]
-  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses
-  	@job_applications = []
-  	@applicants = []
-  	unless params[:submission_status].blank?
-  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :submission_status => params[:submission_status]})
-  	end
-  	unless params[:review_status].blank?
-  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :review_status => params[:review_status]})
-  	end 
-  	unless params[:offer_status].blank?
-  	  @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :offer_status => params[:offer_status]})
-  	end 
-  	@applicant_fields.each do |af|
-  	  unless params["#{af}"].blank?
-  	    @applicants = Applicant.find(:all, :conditions => {"#{af}" => params["#{af}"]})
-  	    @applicants.each do |a|
-  	      @job_applications << JobApplication.find(:all, :conditions => {:job_id => params[:job_id], :applicant_id => a.id})
-  	    end  
-  	  end  
-  	end  
-  	@job_applications.flatten!
-  	@job_applications.uniq!
-  end
-  
   def export_filtered_to_csv
     @job = Job.find(params[:job_id])
     unless User.current.admin? || @job.is_manager?
