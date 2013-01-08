@@ -57,9 +57,7 @@
   			    <% material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})%>
   			    <td><%= render :partial => 'attachments/links', :locals => {:attachments => material, :options => {}} %></td>
 		      <% end %>
-			<% end %> 
-	      <% else %>
-			  None
+			<% end %>
 		  <% end %>
 		  
 		<% end %>
