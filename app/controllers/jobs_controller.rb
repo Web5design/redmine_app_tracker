@@ -548,7 +548,7 @@ class JobsController < ApplicationController
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
         referrals.each do |r|
-          material = Attachment.find(:all, :conditions => {:container_id => r.id})
+          material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
           @referral_fields.each do |rf|  
             row << r.send(rf)
           end 
