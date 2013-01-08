@@ -553,10 +553,7 @@ class JobsController < ApplicationController
             row << r.send(rf)
           end 
           unless material.nil? || material.empty?
-            p "materials"
-            p material
             material.each do |m|
-              p m
   			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
   			    end
   			  else
@@ -974,7 +971,7 @@ class JobsController < ApplicationController
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
         referrals.each do |r|
-          material = Attachment.find(:all, :conditions => {:container_id => r.id})
+          material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
           @referral_fields.each do |rf|  
             row << r.send(rf)
           end 
