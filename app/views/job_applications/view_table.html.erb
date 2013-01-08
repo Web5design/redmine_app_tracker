@@ -45,10 +45,9 @@
 		  <% end %>
 		  <% referrals = ja.job_application_referrals.find :all, :include => [:attachments] %>
   		  <% if referrals.empty? %>
-		    <% @referral_fields.each do |rf| %>
+		    <% @referral_fields_cols.each do |rfc| %>
 			  <td></td>
     		<% end %>
-			<td></td>
 		  <% else %>
 		    <% referrals.each do |r| %>
     	      <% @referral_fields.each do |rf| %>

@@ -552,10 +552,9 @@ class JobsController < ApplicationController
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
         if referrals.empty?
-    		  @referral_fields.each do |rf|
+    		  @referral_fields_cols.each do |rfc|
     			  row << ""
         	end
-    			row << ""
     		else
           referrals.each do |r|
             material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
@@ -986,10 +985,9 @@ class JobsController < ApplicationController
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
         if referrals.empty?
-    		  @referral_fields.each do |rf|
+    		  @referral_fields_cols.each do |rfc|
     			  row << ""
         	end
-    			row << ""
     		else
           referrals.each do |r|
             material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
