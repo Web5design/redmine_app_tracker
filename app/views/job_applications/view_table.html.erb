@@ -35,17 +35,28 @@
 		  <% @custom.each do |c| %>
 		    <% ja.custom_values.each do |cv| %>
 		      <% if cv.custom_field.name == c %>
-		        <td><%= show_value(cv) %></td>
+				<% if show_value(cv).blank? %>
+		          <td></td>
+				<% else %>
+				  <td><%= show_value(cv) %></td>
+				<% end %>
 			  <% end %>
 		    <% end %>
 		  <% end %>
 		  <% referrals = ja.job_application_referrals.find :all, :include => [:attachments] %>
-  		  <% referrals.each do |r| %>
-    	    <% @referral_fields.each do |rf| %>
-      	      <td><%= r.send(rf) %></td>
+  		  <% if referrals.empty? %>
+		    <% @referral_fields.each do |rf| %>
+			  <td></td>
     		<% end %>
-			<td><%= link_to_attachments r %></td>
-  		  <% end %>
+			<td></td>
+		  <% else %>
+		    <% referrals.each do |r| %>
+    	      <% @referral_fields.each do |rf| %>
+			    <td><%= r.send(rf) %></td>
+    		  <% end %>
+			  <td><%= link_to_attachments r %></td>
+  		    <% end %>
+		  <% end %>	
 		  <% @statuses.each do |s| %>
 		    <td><%= ja.send(s) %></td>
 		  <% end %>

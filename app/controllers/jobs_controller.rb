@@ -542,24 +542,35 @@ class JobsController < ApplicationController
         @custom.each do |c| 
           ja.custom_values.each do |cv|
             if cv.custom_field.name == c
-              row << show_value(cv)
+              if show_value(cv).blank?
+      		      row << ""  
+      				else
+      				  row << show_value(cv)
+      				end
             end  
           end
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
-        referrals.each do |r|
-          material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
-          @referral_fields.each do |rf|  
-            row << r.send(rf)
-          end 
-          unless material.nil? || material.empty?
-            material.each do |m|
-  			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
-  			    end
-  			  else
-  			    row << ""
-  			  end    
-        end
+        if referrals.empty?
+    		  @referral_fields.each do |rf|
+    			  row << ""
+        	end
+    			row << ""
+    		else
+          referrals.each do |r|
+            material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
+            @referral_fields.each do |rf|  
+              row << r.send(rf)
+            end 
+            unless material.nil? || material.empty?
+              material.each do |m|
+  			        row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+  			      end
+  			    else
+  			      row << ""
+  			    end    
+          end
+        end  
         @statuses.each do |s|
           row << ja.send(s)
         end
@@ -965,23 +976,34 @@ class JobsController < ApplicationController
         @custom.each do |c| 
           ja.custom_values.each do |cv|
             if cv.custom_field.name == c
-              row << show_value(cv)
+              if show_value(cv).blank?
+      		      row << ""  
+      				else
+      				  row << show_value(cv)
+      				end
             end  
           end
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
-        referrals.each do |r|
-          material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
-          @referral_fields.each do |rf|  
-            row << r.send(rf)
-          end 
-          unless material.nil? || material.empty?
-            material.each do |m|
-  			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
-  			    end
-  			  else
-  			    row << ""
-  			  end    
+        if referrals.empty?
+    		  @referral_fields.each do |rf|
+    			  row << ""
+        	end
+    			row << ""
+    		else
+          referrals.each do |r|
+            material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
+            @referral_fields.each do |rf|  
+              row << r.send(rf)
+            end 
+            unless material.nil? || material.empty?
+              material.each do |m|
+  			        row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+  			      end
+  			    else
+  			      row << ""
+  			    end    
+          end
         end
         @statuses.each do |s|
           row << ja.send(s)
