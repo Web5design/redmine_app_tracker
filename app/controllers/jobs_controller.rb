@@ -540,15 +540,19 @@ class JobsController < ApplicationController
           row << ja.applicant.send(af)
         end
         @custom.each do |c| 
-          ja.custom_values.each do |cv|
-            if cv.custom_field.name == c
-              if show_value(cv).blank?
-      		      row << ""  
-      				else
-      				  row << show_value(cv)
-      				end
-            end  
-          end
+          if ja.submission_status == "Not Submitted"
+    		    row << "" 
+    			else
+            ja.custom_values.each do |cv|
+              if cv.custom_field.name == c
+                if show_value(cv).blank?
+      		        row << ""  
+      				  else
+      				    row << show_value(cv)
+      				  end
+              end  
+            end
+          end  
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
         if referrals.empty?
@@ -973,15 +977,19 @@ class JobsController < ApplicationController
           row << ja.applicant.send(af)
         end
         @custom.each do |c| 
-          ja.custom_values.each do |cv|
-            if cv.custom_field.name == c
-              if show_value(cv).blank?
-      		      row << ""  
-      				else
-      				  row << show_value(cv)
-      				end
-            end  
-          end
+          if ja.submission_status == "Not Submitted"
+    		    row << "" 
+    			else
+            ja.custom_values.each do |cv|
+              if cv.custom_field.name == c
+                if show_value(cv).blank?
+      		        row << ""  
+      				  else
+      				    row << show_value(cv)
+      				  end
+              end  
+            end
+          end  
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
         if referrals.empty?
