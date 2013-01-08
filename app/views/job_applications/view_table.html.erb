@@ -35,6 +35,7 @@
 		  <% @custom.each do |c| %>
 		    <% ja.custom_values.each do |cv| %>
 		      <% if cv.custom_field.name == c %>
+				<%= show_value(cv).class %>
 				<% if show_value(cv).blank? %>
 		          <td></td>
 				<% else %>
