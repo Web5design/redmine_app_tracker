@@ -553,7 +553,10 @@ class JobsController < ApplicationController
             row << r.send(rf)
           end 
           unless material.nil? || material.empty?
+            p "materials"
+            p material
             material.each do |m|
+              p m
   			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
   			    end
   			  else
