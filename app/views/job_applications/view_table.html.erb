@@ -33,14 +33,17 @@
 	        <td><%= ja.applicant.send(af) %></td>
 	      <% end %>
 		  <% @custom.each do |c| %>
-		    <% ja.custom_values.each do |cv| %>
-		      <% if cv.custom_field.name == c %>
-				<%= ja.applicant.last_name %> <%= show_value(cv).class %>
-				<% if show_value(cv).blank? || show_value(cv).empty? %>
-		          <td></td>
-				<% else %>
-				  <td><%= show_value(cv) %></td>
-				<% end %>
+		    <% if ja.submission_status == "Not Submitted" %>
+		      <td></td>
+			<% else %>
+		      <% ja.custom_values.each do |cv| %>
+		        <% if cv.custom_field.name == c %>
+				  <% if show_value(cv).blank? || show_value(cv).empty? %>
+		            <td></td>
+				  <% else %>
+				    <td><%= show_value(cv) %></td>
+				  <% end %>
+			    <% end %>
 			  <% end %>
 		    <% end %>
 		  <% end %>
