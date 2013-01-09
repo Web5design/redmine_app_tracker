@@ -18,11 +18,12 @@ class JobApplicationMaterial < ActiveRecord::Base
 
 
   def attachments_deletable?(usr=User.current)
-    if usr.admin? || usr.member_of?(self.job_application.job.apptracker.project)
-      false
-    else
-      true
-    end  
+    # if usr.admin? || usr.member_of?(self.job_application.job.apptracker.project)
+    #       false
+    #     else
+    #       true
+    #     end
+    true  
   end
   
   def project

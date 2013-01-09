@@ -1,7 +1,9 @@
 <% if @job_applications.nil? || @job_applications.empty? %>
   no applications yet!
 <% else %>
-    <p>* When clicking on "View" below, application will open in a new tab/window to preserve filtered search.</p>
+	<% if(User.current.admin? || @job_applications[0].job.is_manager?)%>
+      <p>* When clicking on "View" below, application will open in a new tab/window to preserve filtered search.</p>
+	<% end %>
 	<table class="list">
 	<thead>
 	  <tr>

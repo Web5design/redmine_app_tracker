@@ -38,7 +38,7 @@
         <td><%= textilizable job.short_desc %></td>
         <td><%=h job.status %></td>
 		<td><%=h job.submission_date.month %>/<%=h job.submission_date.day %>/<%=h job.submission_date.year %> <%= job.submission_date.strftime("%I:%M %p") %> ET</td>
-		<td><%=h job.display_deadline %> ET</td>
+		<td><%=h job.display_deadline %></td>
 		<td><%= link_to 'View as Applicant', job_url(job.id, :apptracker_id => params[:apptracker_id], :admin_view => true), :class => 'icon icon-view' %></td>
         <td><%= link_to 'Edit', edit_job_url(job.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %></td>
         <td><%= link_to 'Delete', job_url(:id => job.id, :apptracker_id => params[:apptracker_id]), 
