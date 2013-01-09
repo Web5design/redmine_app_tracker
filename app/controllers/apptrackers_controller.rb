@@ -16,7 +16,11 @@ class ApptrackersController < ApplicationController
     end
 
     # display a project's apptrackers
-    @apptrackers = Apptracker.find(:all, :conditions => ["project_id = ?", @project.id])
+    if(User.current.admin?)
+      @apptrackers = Apptracker.find(:all, :conditions => ["project_id = ?", @project.id])
+    else
+      @apptrackers = Apptracker.find(:all, :conditions => ["project_id = ? and status = ?", @project.id, "Active"])
+    end    
   end
   
   # GET /apptrackers/1
