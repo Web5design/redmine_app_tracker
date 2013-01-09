@@ -4,7 +4,7 @@ class Notification < Mailer
     # Send the email to the applicant
     @message = job_application.job.application_followup_message
     recipients Applicant.find_by_id(job_application.applicant_id).email
-    subject "Application Submitted"
+    subject "Berkman Center Application Submitted"
     body :user => Applicant.find_by_id(job_application.applicant_id),
          :url => url_for(:controller => 'job_application', :action => 'show', :id => job_application.id, :apptracker_id => job_application.apptracker_id)
     content_type "text/html"     

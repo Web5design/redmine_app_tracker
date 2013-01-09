@@ -20,8 +20,7 @@
 
   <p>
     <%= f.label(:short_desc) %><span class="required">*</span><br />
-    <%= f.text_area(:short_desc, :rows => 5, :class => 'wiki-edit') %>
-	<%= wikitoolbar_for 'short_desc' %>
+    <%= f.text_area(:short_desc, :rows => 5) %>
   </p>
 
   <p>
@@ -37,7 +36,8 @@
   
   <p>
     <%= f.label(:application_followup_message, "Application Follow-up Message") %><span class="required">*</span><br />
-    <%= f.text_area(:application_followup_message, :size => "60x5") %>
+    <%= f.text_area(:application_followup_message, :size => "60x5", :class => 'wiki-edit') %>
+	<%= wikitoolbar_for 'job_application_followup_message' %>
   </p>
 
   <p>
