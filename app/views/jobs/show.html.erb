@@ -151,7 +151,7 @@ function toggle2() {
 <p>
 <strong>Category:</strong> <%=h @job.category %><br />
 <br />
-<strong>Application Deadline:</strong> <%= (User.current.admin? || @job.is_manager?) ? "#{@job.submission_date.strftime("%m/%d/%Y")} #{@job.submission_date.strftime("%I:%M %p")} ET" : "#{@job.display_deadline}" %>
+<strong>Application Deadline:</strong> <%= ((User.current.admin? && @admin_view.nil?) || @job.is_manager?) ? "#{@job.submission_date.strftime("%m/%d/%Y")} #{@job.submission_date.strftime("%I:%M %p")} ET" : "#{@job.display_deadline}" %>
 <br />
 <br />
 <% unless @job.application_material_types.nil? || @job.application_material_types.empty? %>	
