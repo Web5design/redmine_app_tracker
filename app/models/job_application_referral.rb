@@ -26,8 +26,7 @@ class JobApplicationReferral < ActiveRecord::Base
   end
   
   def attachments_visible?(user=User.current)
-    #user.allowed_to?(self.class.attachable_options[:view_permission], self.project)
-    true
+    user.admin? || user.member_of?(self.job_application.job.apptracker.project)
   end
 
 end
