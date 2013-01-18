@@ -274,23 +274,25 @@ class JobsController < ApplicationController
       
       unless @ja_materials.nil?
         @ja_materials.each do |jam|
-          jam.attachments.each do |jama|
-            ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-            new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
-            orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
-            if File.exists?(orig_file_path)
-              orig_file_name = File.basename(orig_file_path)
-              if zipfile.find_entry(new_file_name)
-                zipfile.remove(new_file_name)
+          unless jam.attachments.nil?
+            jam.attachments.each do |jama|
+              ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
+              new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+              orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
+              if File.exists?(orig_file_path)
+                orig_file_name = File.basename(orig_file_path)
+                if zipfile.find_entry(new_file_name)
+                  zipfile.remove(new_file_name)
+                end
+                zipfile.get_output_stream("#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).id}/" + new_file_name) do |f|
+                  input = File.open(orig_file_path)
+                  data_to_copy = input.read()
+                  f.write(data_to_copy)
+                end
+              else
+                puts "Warning: file #{orig_file_path} does not exist"
               end
-              zipfile.get_output_stream("#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).id}/" + new_file_name) do |f|
-                input = File.open(orig_file_path)
-                data_to_copy = input.read()
-                f.write(data_to_copy)
-              end
-            else
-              puts "Warning: file #{orig_file_path} does not exist"
-            end
+            end  
           end    
         end
       end   
@@ -411,27 +413,29 @@ class JobsController < ApplicationController
       Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
         unless @ja_materials.nil?
           @ja_materials.each do |jam|
-            jam.attachments.each do |jama|
-              @material_types.each do |mt|
-                if mt == jama.description
-                  ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-                  new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
-                  orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
-                  if File.exists?(orig_file_path)
-                    orig_file_name = File.basename(orig_file_path)
-                    if zipfile.find_entry(new_file_name)
-                      zipfile.remove(new_file_name)
+            unless jam.attachments.nil?
+              jam.attachments.each do |jama|
+                @material_types.each do |mt|
+                  if mt == jama.description
+                    ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
+                    new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+                    orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
+                    if File.exists?(orig_file_path)
+                      orig_file_name = File.basename(orig_file_path)
+                      if zipfile.find_entry(new_file_name)
+                        zipfile.remove(new_file_name)
+                      end
+                      zipfile.get_output_stream(new_file_name) do |f|
+                        input = File.open(orig_file_path)
+                        data_to_copy = input.read()
+                        f.write(data_to_copy)
+                      end
+                    else
+                      puts "Warning: file #{file_path} does not exist"
                     end
-                    zipfile.get_output_stream(new_file_name) do |f|
-                      input = File.open(orig_file_path)
-                      data_to_copy = input.read()
-                      f.write(data_to_copy)
-                    end
-                  else
-                    puts "Warning: file #{file_path} does not exist"
-                  end
+                  end  
                 end  
-              end  
+              end
             end    
           end 
         end  
