@@ -530,7 +530,7 @@ class JobsController < ApplicationController
   	unless @job.application_material_types.nil? || @job.application_material_types.empty?
 		  @materials = @job.application_material_types.split(',')  
 		end
-  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials
+  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials + ["Additional Materials"]
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -593,6 +593,18 @@ class JobsController < ApplicationController
       			    row << ""
       			  end   
     		    end
+    			end
+    			@job_application_materials.each do |jam|
+    			  material = Attachment.find(:all, :conditions => ["container_id = ? and description LIKE 'Additional:%'", jam.id])
+    			  additional = ""
+    			  unless material.nil? || material.empty?
+    			    material.each do |m|
+    			      additional += url_for(:controller => 'attachments', :action => 'show', :id => m.id) + ", "
+    			    end
+    			    row << additional
+    			  else
+    			    row << ""
+    			  end
     			end
     		end
         csv << row
@@ -923,7 +935,7 @@ class JobsController < ApplicationController
   	unless @job.application_material_types.nil? || @job.application_material_types.empty?
 		  @materials = @job.application_material_types.split(',')  
 		end
-  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials
+  	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials + ["Additional Materials"]
     
     csv_string = FasterCSV.generate do |csv| 
       # header row 
@@ -986,6 +998,18 @@ class JobsController < ApplicationController
       			    row << ""
       			  end   
     		    end
+    			end
+    			@job_application_materials.each do |jam|
+    			  material = Attachment.find(:all, :conditions => ["container_id = ? and description LIKE 'Additional:%'", jam.id])
+    			  additional = ""
+    			  unless material.nil? || material.empty?
+    			    material.each do |m|
+    			      additional += url_for(:controller => 'attachments', :action => 'show', :id => m.id) + ", "
+    			    end
+    			    row << additional
+    			  else
+    			    row << ""
+    			  end
     			end
     		end
         csv << row

@@ -137,7 +137,7 @@ class JobApplicationsController < ApplicationController
           error_files << amt  
         end  
         i = i + 1
-      end 
+      end   
     else
       error_files = materials  
     end
@@ -234,6 +234,11 @@ class JobApplicationsController < ApplicationController
             end  
             i = i + 1
           end
+          #case of additional file added by admin
+          unless params[:attachments][i.to_s].nil?
+            params[:attachments][i.to_s]['description'] = "Additional: " + params[:additional_description]
+          end
+          
           attachments = Attachment.attach_files(@job_application_material, params[:attachments])
           render_attachment_warning_if_needed(@job_application_material)    
         

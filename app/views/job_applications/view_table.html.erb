@@ -23,6 +23,7 @@
 			  <th style="text-align:left;"><%= amt %></th>
 			<% end %>  
 		  <% end %>	
+		  <th style="text-align:left;">Additional Materials</th>
 	    </tr>	
 	  </thead>
 	  <tbody>
@@ -72,6 +73,10 @@
   			    <td><%= render :partial => 'attachments/links', :locals => {:attachments => material, :options => {}} %></td>
 		      <% end %>
 			<% end %>
+			<% @job_application_materials.each do |jam| %>
+  			    <% material = Attachment.find(:all, :conditions => ["container_id = ? and description LIKE 'Additional:%'", jam.id])%>
+  			    <td><%= render :partial => 'attachments/links', :locals => {:attachments => material, :options => {}} %></td>
+		    <% end %>
 		  <% end %>
 		<% end %>
 	  </tbody>

@@ -77,6 +77,17 @@ document.observe("dom:loaded", function() {
 		    <% end %>
 		  <% end %>
 		<% end %>
+		
+		<% if User.current.admin? %>
+		  <h4>Additional Materials</h4>
+	      <% f.fields_for :job_application_materials do |jam| %>
+		    <%= jam.hidden_field(:job_application_id, :value => @job_application.id ) %>
+		    <div class="box">
+			  <p><label><%=l(:label_attachment_plural)%></label><span class="required">*</span><%= render :partial => 'attachments/form' %></p>
+			  <p><label>Optional Description</label><%= text_field_tag :additional_description %></p>
+		    </div>
+	      <% end %>
+		<% end %>
 	<% end %>	
   
   <br /><br />
