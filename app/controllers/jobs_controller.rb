@@ -580,6 +580,17 @@ class JobsController < ApplicationController
   			      row << ""
   			    end    
           end
+        end
+  		  if referrals.length < @job.referrer_count.to_i
+  		    leftover =  @job.referrer_count.to_i - referrals.length
+    	    i = 0
+  			  until i == leftover  do
+  			    @referral_fields.each do |rf|
+  		        row << ""
+            end
+  		      row << ""
+  			    i += 1
+  			  end  
         end  
         @statuses.each do |s|
           row << ja.send(s)
@@ -989,6 +1000,17 @@ class JobsController < ApplicationController
   			      row << ""
   			    end    
           end
+        end
+  		  if referrals.length < @job.referrer_count.to_i
+  		    leftover =  @job.referrer_count.to_i - referrals.length
+    	    i = 0
+  			  until i == leftover  do
+  			    @referral_fields.each do |rf|
+  		        row << ""
+            end
+  		      row << ""
+  			    i += 1
+  			  end  
         end
         @statuses.each do |s|
           row << ja.send(s)

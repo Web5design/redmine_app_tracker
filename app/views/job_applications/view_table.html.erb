@@ -60,7 +60,18 @@
     		  <% end %>
 			  <td><%= link_to_attachments r %></td>
   		    <% end %>
-		  <% end %>	
+		  <% end %>
+		  <% if referrals.length < @job.referrer_count.to_i %>
+		    <% leftover =  @job.referrer_count.to_i - referrals.length %>
+  	        <% i = 0 %>
+			<% until i == leftover  do %>
+			  <% @referral_fields.each do |rf| %>
+		        <td></td>
+  		      <% end %>
+		      <td></td>
+			  <% i += 1 %>
+			<% end %>  
+		  <% end %>
 		  <% @statuses.each do |s| %>
 		    <td><%= ja.send(s) %></td>
 		  <% end %>
