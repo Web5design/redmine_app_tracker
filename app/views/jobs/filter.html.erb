@@ -94,5 +94,4 @@ function toggle3() {
   <%= submit_tag "Filter" -%>
 <% end %>
 
-<%= render :partial => "list_job_applications", :locals => { :job_applications => @job_applications, :job => @job, :columns => @columns, :applicant_fields => @applicant_fields, :custom => @custom, :referral_fields => @referral_fields, :statuses => @statuses, :apptracker => @apptracker } %>
-
+<%= render :partial => "list_job_applications", :locals => { :job_applications => @job_applications, :job => @job, :columns => @columns, :applicant_fields => @applicant_fields, :custom => @custom, :referral_fields => @referral_fields, :statuses => @statuses, :apptracker => @apptracker, :box => true } %>	

@@ -5,7 +5,7 @@ ActionController::Routing::Routes.draw do |map|
   # map.connect 'apptrackers/:action.:format', :controller => 'apptrackers'
   #map.connect 'apptrackers/new', :controller => 'apptrackers', :action => 'new', :conditions => {:method => :post}
   map.resources :applicants
-  map.resources :jobs, :collection => {:zip_some => [:get,:post], :zip_all => [:get,:post], :filter => [:get,:post], :filter_by_status => [:get,:post], :zip_filtered => [:get,:post], :zip_filtered_single => [:get,:post], :export_filtered_to_csv => [:get,:post]}
+  map.resources :jobs, :collection => {:zip_some => [:get,:post], :zip_all => [:get,:post], :filter => [:get,:post], :filter_by_status => [:get,:post], :zip_filtered => [:get,:post], :zip_filtered_single => [:get,:post], :export_filtered_to_csv => [:get,:post], :filter_bulk_status => [:get,:post]}
   map.resources :job_applications, :collection => {:view_table => [:get,:post], :new_referral => [:get,:post]}
   map.resources :job_attachments
   map.resources :job_custom_fields

@@ -22,9 +22,13 @@
 	  <%= button_to 'Zip Materials for Filtered Results Into Folders by Applicant', zip_filtered_jobs_path(:job_id => @job.id, :job_applications => @job_applications) %>
 	</p>
 	<p>* When clicking on "View" below, application will open in a new tab/window to preserve filtered search.</p>
+	<% form_tag({:controller => 'jobs', :action => 'filter_bulk_status'}, :id => 'applicant_form') do %>
 	<table id="list_table">
 	  <thead class="list_table-first">
 	    <tr>
+  		  <% if box %>
+  		    <th style="width:3%; text-align:left;"></th>
+  		  <% end %>	
 		  <th style="text-align:left;">View Application</th>
 		  <% @columns.each do |column| %>
 		    <th style="text-align:left;"><%= column %></th>
@@ -38,8 +42,14 @@
 	    </tr>	
 	  </thead>
 	  <tbody>
+  	    <% if box %>
+            <%= check_box_tag('check_all', 'check_all', false,  :onClick => "$$('#applicant_form input.check').each(function(box){box.checked=($('check_all').checked)?true:false});")%> Select All <br /><br />
+  	    <% end %>  
 		<% @job_applications.each do |ja| %>
 		<tr>
+          <% if box %>
+  		    <td style="width:3%"><%= check_box_tag ("applicants_to_zip[]", ja.id, false, :class => 'check') %></td>
+  		  <% end %>	
 		  <td><h3><%= link_to "View", job_application_path(ja, :apptracker_id => @apptracker.id), {:title => "Application will open in new tab/window.", :target => "_blank"} %></h3></td>	
 		  
 		    <% @applicant_fields.each do |af| %>
@@ -105,6 +115,26 @@
 		<% end %>
 	  </tbody>
 	</table>
+    <p></p>
+    <% unless @job_applications.length == 0 %>
+      <h3>Bulk Change Application Status</h3>
+      <p>
+      <%= label_tag 'job_materials', 'Select Applications from above to Bulk Change Status'%><br />
+      <br />
+      <%= label_tag(:submission_status, "Submission Status") %><br />
+      <%= select_tag(:submission_status, options_for_select(JobApplication::SUBMISSION_STATUS)) %>
+      <br />
+      <%= label_tag(:review_status, "Review Status") %><br />
+      <%= select_tag(:review_status, options_for_select(JobApplication::REVIEW_STATUS)) %>
+      <br />
+      <%= label_tag(:offer_status, "Offer Status") %><br />
+      <%= select_tag(:offer_status, options_for_select(JobApplication::OFFER_STATUS)) %>
+      <br />
+      <%= hidden_field_tag :job_id, @job.id %>
+      <br />
+      <%= submit_tag 'Bulk Change Status' %>
+    <% end %>	
+  <% end %>	
 <% else %>
   <p>No applications found.	</p>
 <% end %>

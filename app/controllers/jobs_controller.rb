@@ -633,6 +633,8 @@ class JobsController < ApplicationController
   end
   
   def filter
+    p "JOB ID"
+    p params[:job_id]
     @job = Job.find(params[:job_id])
     @apptracker = Apptracker.find(params[:apptracker_id])
     unless User.current.admin? || @job.is_manager?
@@ -1050,6 +1052,35 @@ class JobsController < ApplicationController
     send_data csv_string, 
             :type => 'text/html; charset=iso-8859-1; header=present', 
             :disposition => "attachment; filename=#{@file_name}-applicant-status.csv"
-  end  
+  end 
   
+  def filter_bulk_status
+    if params[:commit] == "Bulk Change Status"
+      @job = Job.find(params[:job_id].to_i)
+      @apptracker_id = @job.apptracker.id
+      unless params[:applicants_to_zip].nil?
+        applications = Array.new
+        params[:applicants_to_zip].each do |ja|
+          applications << JobApplication.find(ja)
+        end
+        applications.each do |app|
+          if !params[:submission_status].blank?
+            app.submission_status = params[:submission_status]
+          end  
+          if !params[:review_status].blank?
+            app.review_status = params[:review_status]
+          end  
+          if !params[:offer_status].blank?
+            app.offer_status = params[:offer_status]
+          end 
+          app.save!     
+        end
+        flash[:notice] = "Applications successfully updated!"
+        redirect_to(filter_jobs_path(:job_id => @job.id, :apptracker_id => @apptracker_id))
+      else
+        flash[:notice] = "You did not select any applications."
+        redirect_to(filter_jobs_path(:job_id => @job.id, :apptracker_id => @apptracker_id))
+      end
+    end
+  end   
 end

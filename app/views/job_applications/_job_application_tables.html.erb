@@ -10,7 +10,7 @@
 	    <% if(User.current.admin?)%>
 	      <!-- Admin Role -->
 		  <% if box %>
-		    <th style="width:3%; text-align:left;">Zip</th>
+		    <th style="width:3%; text-align:left;"></th>
 		  <% end %>
 		  <th style="width:10%; text-align:left;">Job</th>
 	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
@@ -30,7 +30,7 @@
 		<% elsif @job_applications[0].job.is_manager?%>
 		  <!-- Manager Role -->
 		  <% if box %>
-		    <th style="width:3%; text-align:left;">Zip</th>
+		    <th style="width:3%; text-align:left;"></th>
 		  <% end %>
 		  <th style="width:10%; text-align:left;">Job</th>
 	      <%= sort_header_tag('last_name', :caption => 'Applicant') %>
