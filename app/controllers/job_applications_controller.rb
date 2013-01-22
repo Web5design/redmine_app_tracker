@@ -235,7 +235,7 @@ class JobApplicationsController < ApplicationController
             i = i + 1
           end
           #case of additional file added by admin
-          unless params[:attachments][i.to_s].nil?
+          unless params[:attachments].nil? || params[:attachments][i.to_s].nil?
             params[:attachments][i.to_s]['description'] = "Additional: " + params[:additional_description]
           end
           
@@ -251,11 +251,13 @@ class JobApplicationsController < ApplicationController
       	  end
 
       	  upload_error = false
-      	  materials.each do |material|
-      	    if !uploaded.include?(material)
-      	      upload_error = true
-      	    end  
-      	  end
+          unless User.current.admin?
+      	    materials.each do |material|
+      	      if !uploaded.include?(material)
+      	        upload_error = true
+      	      end  
+      	    end
+          end  
       	end
       	
       	if upload_error == true
