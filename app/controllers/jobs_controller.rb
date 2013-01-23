@@ -48,7 +48,12 @@ class JobsController < ApplicationController
                 'offer_status' => "#{JobApplication.table_name}.offer_status",
                 'created_at' => "#{JobApplication.table_name}.created_at"
     #sort_update %w(id submission_status, acceptance_status, created_at)
-    @job_applications = @job.job_applications.find(:all, :order => sort_clause)
+    
+    @job_count = @job.job_applications.count
+    @per_page = 10
+    @job_pages = Paginator.new self, @job_count, @per_page, params[:page]
+    
+    @job_applications = @job.job_applications.find(:all, :order => sort_clause, :limit => @job_pages.items_per_page, :offset => @job_pages.current.offset)
     
     @job_attachments = @job.job_attachments.build
     job_attachments = @job.job_attachments.find :first, :include => [:attachments]

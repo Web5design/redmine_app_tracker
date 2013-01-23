@@ -60,8 +60,9 @@ function toggle2() {
   <% end %>
   <% form_tag({:controller => 'jobs', :action => 'zip_some'}, :id => 'applicant_form') do %>
   <!-- render Job Applications partial -->
-  <h3>Submitted Applications - Total <%= @job_applications.length %></h3>
+  <h3>Submitted Applications - Total <%= @job_count %></h3>
   <%= render :partial => "job_applications/job_application_tables", :locals => { :box => true } %>
+    <p class="pagination"><%= pagination_links_full @job_pages, @job_count %></p>
     <p></p>
 	<% unless @job_applications.length == 0 %>
 	  <h3>Bulk Change Application Status</h3>
