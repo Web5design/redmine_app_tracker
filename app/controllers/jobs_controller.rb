@@ -282,7 +282,11 @@ class JobsController < ApplicationController
           unless jam.nil? || jam.attachments.nil?
             jam.attachments.each do |jama|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+              if material_id_hash[jama.description].nil?
+                new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{jama.description.gsub(/[^a-zA-Z\d]/, '-')}_#{jam.job_application_id}#{ext_name}"
+              else
+                new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+              end
               orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
               if File.exists?(orig_file_path)
                 orig_file_name = File.basename(orig_file_path)
@@ -423,7 +427,11 @@ class JobsController < ApplicationController
                 @material_types.each do |mt|
                   if mt == jama.description
                     ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-                    new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+                    if material_id_hash[jama.description].nil?
+                      new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{jama.description.gsub(/[^a-zA-Z\d]/, '-')}_#{jam.job_application_id}#{ext_name}"
+                    else
+                      new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+                    end
                     orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
                     if File.exists?(orig_file_path)
                       orig_file_name = File.basename(orig_file_path)
@@ -768,7 +776,11 @@ class JobsController < ApplicationController
           unless jam.nil? || jam.attachments.nil?
             jam.attachments.each do |jama|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+              if material_id_hash[jama.description].nil?
+                new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{jama.description.gsub(/[^a-zA-Z\d]/, '-')}_#{jam.job_application_id}#{ext_name}"
+              else
+                new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+              end    
               orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
               if File.exists?(orig_file_path)
                 orig_file_name = File.basename(orig_file_path)
@@ -879,7 +891,11 @@ class JobsController < ApplicationController
           unless jam.nil? || jam.attachments.nil?
           jam.attachments.each do |jama|
             ext_name = File.extname("#{RAILS_ROOT}/files/" + jama.disk_filename)
-            new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+            if material_id_hash[jama.description].nil?
+              new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{jama.description.gsub(/[^a-zA-Z\d]/, '-')}_#{jam.job_application_id}#{ext_name}"
+            else
+              new_file_name = "#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(jam.job_application_id).applicant_id).first_name}_#{material_id_hash[jama.description]}_#{jam.job_application_id}#{ext_name}"
+            end
             orig_file_path = "#{RAILS_ROOT}/files/" + jama.disk_filename
             if File.exists?(orig_file_path)
               orig_file_name = File.basename(orig_file_path)
