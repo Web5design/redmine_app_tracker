@@ -265,7 +265,7 @@ class JobsController < ApplicationController
     end
       
     @material_types.each do |material|
-      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
+      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/[^a-zA-Z\d]/, '-')
       counter = counter + 1
     end
 
@@ -307,7 +307,7 @@ class JobsController < ApplicationController
           jar.each do |ref|
             ref.attachments.each do |jara|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{jar.index(ref)+1}_#{ref.job_application_id}#{ext_name}"
               
               orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
               if File.exists?(orig_file_path)
@@ -411,7 +411,7 @@ class JobsController < ApplicationController
       end
       
       @material_types.each do |material|
-        material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
+        material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/[^a-zA-Z\d]/, '-')
         counter = counter + 1
       end
     
@@ -450,7 +450,7 @@ class JobsController < ApplicationController
             jar.each do |ref|
               ref.attachments.each do |jara|
                 ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-                new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+                new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{jar.index(ref)+1}_#{ref.job_application_id}#{ext_name}"
               
                 orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
                 if File.exists?(orig_file_path)
@@ -751,7 +751,7 @@ class JobsController < ApplicationController
     end
 
     @material_types.each do |material|
-      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
+      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/[^a-zA-Z\d]/, '-')
       counter = counter + 1
     end
 
@@ -793,7 +793,7 @@ class JobsController < ApplicationController
           jar.each do |ref|
             ref.attachments.each do |jara|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{jar.index(ref)+1}_#{ref.job_application_id}#{ext_name}"
 
               orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
               if File.exists?(orig_file_path)
@@ -868,7 +868,7 @@ class JobsController < ApplicationController
     end
 
     @material_types.each do |material|
-      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/ /, '_')
+      material_id_hash[material] = "%03d" % counter.to_s + "_" + material.gsub(/[^a-zA-Z\d]/, '-')
       counter = counter + 1
     end
 
@@ -904,7 +904,7 @@ class JobsController < ApplicationController
           jar.each do |ref|
             ref.attachments.each do |jara|
               ext_name = File.extname("#{RAILS_ROOT}/files/" + jara.disk_filename)
-              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{ref.attachments.index(jara)+1}_#{ref.job_application_id}#{ext_name}"
+              new_file_name = "#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).last_name}_#{Applicant.find(JobApplication.find(ref.job_application_id).applicant_id).first_name}_Referral_#{jar.index(ref)+1}_#{ref.job_application_id}#{ext_name}"
 
               orig_file_path = "#{RAILS_ROOT}/files/" + jara.disk_filename
               if File.exists?(orig_file_path)
