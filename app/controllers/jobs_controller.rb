@@ -50,7 +50,7 @@ class JobsController < ApplicationController
     #sort_update %w(id submission_status, acceptance_status, created_at)
     
     @job_count = @job.job_applications.count
-    @per_page = 10
+    @per_page = params[:per_page].nil? ? 10 : params[:per_page].to_i
     @job_pages = Paginator.new self, @job_count, @per_page, params[:page]
     
     @job_applications = @job.job_applications.find(:all, :order => sort_clause, :limit => @job_pages.items_per_page, :offset => @job_pages.current.offset)
