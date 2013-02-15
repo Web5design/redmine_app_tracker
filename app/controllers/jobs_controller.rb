@@ -5,7 +5,7 @@ require 'tempfile'
 
 class JobsController < ApplicationController
   unloadable
-  before_filter :require_admin, :except => [:index, :show, :register, :filter, :filter_by_status, :export_to_csv, :zip_some, :zip_all, :zip_filtered, :zip_filtered_single, :export_filtered_to_csv]
+  before_filter :require_admin, :except => [:index, :show, :register, :filter, :filter_by_status, :filter_bulk_status, :export_to_csv, :zip_some, :zip_all, :zip_filtered, :zip_filtered_single, :export_filtered_to_csv]
   
   helper :attachments
   include AttachmentsHelper
@@ -530,7 +530,9 @@ class JobsController < ApplicationController
   	end
     @applicants = @job.applicants
     @job_applications = @job.job_applications
-    @file_name = @job.title.gsub(/ /, '-').gsub(/,/, '-')
+    @file_name = @job.title.gsub(/,/, '-').gsub(/'/, '-').gsub(' ', '-').gsub('/', '-')
+    p "filename"
+    p @file_name
     
     @job_application_custom_fields = @job.all_job_app_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
@@ -549,7 +551,8 @@ class JobsController < ApplicationController
 		end
   	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials + ["Additional Materials"]
     
-    csv_string = FasterCSV.generate do |csv| 
+    #csv_string = FasterCSV.generate do |csv| 
+    FasterCSV.open("#{@file_name}-applicants.csv", "w") do |csv|
       # header row 
       csv << @columns
 
@@ -640,9 +643,11 @@ class JobsController < ApplicationController
     end 
 
     # send it to the browser
-    send_data csv_string, 
-            :type => 'text/html; charset=iso-8859-1; header=present', 
-            :disposition => "attachment; filename=#{@file_name}-applicants.csv"
+    #send_data csv_string, 
+    #        :type => 'text/html; charset=iso-8859-1; header=present', 
+    #        :disposition => "attachment; filename=#{@file_name}-applicants.csv"
+    
+    send_file "#{@file_name}-applicants.csv", :type=>'text/csv'
   end
   
   def filter
