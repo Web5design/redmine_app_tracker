@@ -570,7 +570,8 @@ class JobsController < ApplicationController
                 if show_value(value).blank?
   		            row << ""  
   				      else
-  				        row << show_value(value)
+                  no_comma = show_value(value).gsub(/,/, '')
+  				        row << no_comma
   				      end
               end  
             end
