@@ -44,13 +44,21 @@ function toggle2() {
 <strong>
 <% if (User.current.admin? || @job.is_manager?) && @admin_view.nil? %>
   <% unless @job_applications.length == 0 %>
+  
+  <h3>Job Application Export Options</h3>
+  Due to the quantity of applications, the CSV export has been broken up into managable slices which can then be combined manually.
+	  
+  <% (1..@job_app_slices).each do |i| %>
+  <p>
+  <% form_tag({ :action =>  :export_to_csv }, :html => { :multipart => true })do -%>
+    <%= hidden_field_tag :job_id, @job.id %>
+	<%= hidden_field_tag :slice_id, i-1 %>
+    <%= submit_tag "Export Slice #{i} To CSV" -%>
+  <% end -%>
+  </p>
+  <% end %>
+  
 	  <h3>Job Application Viewing Options</h3>
-	  <p>
-	  <% form_tag({ :action =>  :export_to_csv }, :html => { :multipart => true })do -%>
-	    <%= hidden_field_tag :job_id, @job.id %>
-	    <%= submit_tag "Export All Applicants To CSV" -%>
-	  <% end -%>
-	  </p>
 	  <p>
 	  <%= button_to "View All Job Applications As Table", view_table_job_applications_path(:job_id => @job.id, :apptracker_id => params[:apptracker_id]) %>
 	  </p>	

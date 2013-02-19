@@ -59,6 +59,9 @@ class JobsController < ApplicationController
     job_attachments = @job.job_attachments.find :first, :include => [:attachments]
     @job_attachment = job_attachments
     
+    #for large CSV exports
+    @job_app_slices = @job.job_applications.each_slice(200).to_a.length
+    
     respond_to do |format|
       format.html #show.html.erb
     end
@@ -548,10 +551,12 @@ class JobsController < ApplicationController
   	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials + ["Additional Materials"]
     
     @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-zipped-CSVs.zip"
+    chunk = @job_applications.each_slice(400).to_a[params[:slice_id].to_i]
     
-    Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+    #Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
       chunk_count = 0
-      @job_applications.each_slice(200) do |chunk|  
+      
+      #@job_applications.each_slice(200) do |chunk|  
         chunk_count += 1
         csv_string = FasterCSV.generate do |csv| 
           # header row 
@@ -570,8 +575,8 @@ class JobsController < ApplicationController
                 if show_value(value).blank?
   		            row << ""  
   				      else
-                  no_comma = show_value(value).gsub(/,/, '')
-  				        row << no_comma
+                  #no_comma = show_value(value).gsub(/,/, '')
+  				        row << show_value(value)
   				      end
               end  
             end
@@ -641,28 +646,29 @@ class JobsController < ApplicationController
         end 
 
         # send it to the zip file
-        zipfile.get_output_stream("#{@file_name}-#{chunk_count}-applicants.csv") do |f|
-          f.write(csv_string)
-        end    
-        #send_data csv_string, 
-        #        :type => 'text/html; charset=iso-8859-1; header=present', 
-        #        :disposition => "attachment; filename=#{@file_name}-#{chunk_count}-applicants.csv"
+        #zipfile.get_output_stream("#{@file_name}-#{chunk_count}-applicants.csv") do |f|
+        #  f.write(csv_string)
+        #end
+            
+        send_data csv_string, 
+                :type => 'text/html; charset=iso-8859-1; header=present', 
+                :disposition => "attachment; filename=#{@file_name}-#{params[:slice_id].to_i}-applicants.csv"
     
       #end each_slice        
-      end 
+      #end 
     #end zipfile open
-    end  
+    #end  
     
     #send zip file to browser
-    begin
-      send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
-      File.delete(@zip_file_path)
-    rescue  
-      if File.file?(@zip_file_path)
-        File.delete(@zip_file_path)
-      end  
-      puts "Error sending file"
-    end      
+    #begin
+    #  send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
+    #  File.delete(@zip_file_path)
+    #rescue  
+    #  if File.file?(@zip_file_path)
+    #    File.delete(@zip_file_path)
+    #  end  
+    #  puts "Error sending file"
+    #end      
   end
   
   def filter
