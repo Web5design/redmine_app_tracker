@@ -551,7 +551,7 @@ class JobsController < ApplicationController
     
     Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
       chunk_count = 0
-      @job_applications.each_slice(700) do |chunk|  
+      @job_applications.each_slice(200) do |chunk|  
         chunk_count += 1
         csv_string = FasterCSV.generate do |csv| 
           # header row 
