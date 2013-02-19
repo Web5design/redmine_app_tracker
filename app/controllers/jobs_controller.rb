@@ -531,17 +531,13 @@ class JobsController < ApplicationController
     @applicants = @job.applicants
     @job_applications = @job.job_applications
     @file_name = @job.title.gsub(/,/, '-').gsub(/'/, '-').gsub(' ', '-').gsub('/', '-')
-    p "filename"
-    p @file_name
     
-    @job_application_custom_fields = @job.all_job_app_custom_fields
+    @job_application_custom_fields = @job.job_application_custom_fields
     @applicant_fields = Applicant.column_names - ["id", "created_at", "updated_at"]
     @referral_fields = JobApplicationReferral.column_names - ["id", "job_application_id", "created_at", "updated_at"]
     @custom = []
     unless @job_application_custom_fields.empty?
-  		@job_application_custom_fields.each do |custom_field|
-  		  @custom << custom_field.name
-  		end
+  		@job_application_custom_fields.collect{|custom_field| @custom << custom_field.name}
   	end
   	@referral_fields_cols = (@referral_fields.collect {|x| "Referral " + x } + ["Referral Doc"]) * @job.referrer_count.to_i
   	@statuses = ["submission_status","review_status","offer_status"]
@@ -551,13 +547,22 @@ class JobsController < ApplicationController
 		end
   	@columns = @applicant_fields.collect {|x| "Applicant " + x } + @custom + @referral_fields_cols + @statuses + @materials + ["Additional Materials"]
     
-    #csv_string = FasterCSV.generate do |csv| 
-    FasterCSV.open("#{@file_name}-applicants.csv", "w") do |csv|
+    @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-zipped-CSVs.zip"
+    
+    Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
+
+    chunk_size = @job_applications.length.divmod(4)
+
+    chunk_count = 0
+    @job_applications.each_slice(chunk_size[0]) do |chunk|  
+    chunk_count += 1
+
+    csv_string = FasterCSV.generate do |csv| 
       # header row 
       csv << @columns
 
       # data rows 
-      @job_applications.each do |ja|
+      chunk.each do |ja|
         row = []
         @applicant_fields.each do |af|
           row << ja.applicant.send(af)
@@ -566,15 +571,12 @@ class JobsController < ApplicationController
           if ja.submission_status == "Not Submitted"
     		    row << "" 
     			else
-            ja.custom_values.each do |cv|
-              if cv.custom_field.name == c
-                if show_value(cv).blank?
-      		        row << ""  
-      				  else
-      				    row << show_value(cv)
-      				  end
-              end  
-            end
+            value = ja.custom_values.detect{|cv| cv.custom_field.name == c}
+            if show_value(value).blank?
+  		        row << ""  
+  				  else
+  				    row << show_value(value)
+  				  end
           end  
         end
         referrals = ja.job_application_referrals.find :all, :include => [:attachments]
@@ -598,7 +600,7 @@ class JobsController < ApplicationController
           end
         end
   		  if referrals.length < @job.referrer_count.to_i
-  		    leftover =  @job.referrer_count.to_i - referrals.length
+  		    leftover = @job.referrer_count.to_i - referrals.length
     	    i = 0
   			  until i == leftover  do
   			    @referral_fields.each do |rf|
@@ -642,17 +644,34 @@ class JobsController < ApplicationController
       end 
     end 
 
-    # send it to the browser
+    # send it to the zip file
+    
+    zipfile.get_output_stream("#{@file_name}-#{chunk_count}-applicants.csv") do |f|
+      f.write(csv_string)
+    end
+    
     #send_data csv_string, 
     #        :type => 'text/html; charset=iso-8859-1; header=present', 
-    #        :disposition => "attachment; filename=#{@file_name}-applicants.csv"
+    #        :disposition => "attachment; filename=#{@file_name}-#{chunk_count}-applicants.csv"
     
-    send_file "#{@file_name}-applicants.csv", :type=>'text/csv'
+    #end each_slice        
+    end 
+    #end zipfile open
+    end  
+    
+    #send zip file to browser
+    begin
+      send_file @zip_file_path, :type => 'application/zip', :disposition => 'attachment', :stream => false
+      File.delete(@zip_file_path)
+    rescue  
+      if File.file?(@zip_file_path)
+        File.delete(@zip_file_path)
+      end  
+      puts "Error sending file"
+    end      
   end
   
   def filter
-    p "JOB ID"
-    p params[:job_id]
     @job = Job.find(params[:job_id])
     @apptracker = Apptracker.find(params[:apptracker_id])
     unless User.current.admin? || @job.is_manager?
