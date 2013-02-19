@@ -550,112 +550,105 @@ class JobsController < ApplicationController
     @zip_file_path = "#{RAILS_ROOT}/tmp/#{@file_name}-zipped-CSVs.zip"
     
     Zip::ZipFile.open(@zip_file_path, Zip::ZipFile::CREATE) do |zipfile|
-
-    chunk_size = @job_applications.length.divmod(4)
-
-    chunk_count = 0
-    @job_applications.each_slice(chunk_size[0]) do |chunk|  
-    chunk_count += 1
-
-    csv_string = FasterCSV.generate do |csv| 
-      # header row 
-      csv << @columns
-
-      # data rows 
-      chunk.each do |ja|
-        row = []
-        @applicant_fields.each do |af|
-          row << ja.applicant.send(af)
-        end
-        @custom.each do |c| 
-          if ja.submission_status == "Not Submitted"
-    		    row << "" 
-    			else
-            value = ja.custom_values.detect{|cv| cv.custom_field.name == c}
-            if show_value(value).blank?
-  		        row << ""  
-  				  else
-  				    row << show_value(value)
-  				  end
-          end  
-        end
-        referrals = ja.job_application_referrals.find :all, :include => [:attachments]
-        if referrals.empty?
-    		  @referral_fields_cols.each do |rfc|
-    			  row << ""
-        	end
-    		else
-          referrals.each do |r|
-            material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
-            @referral_fields.each do |rf|  
-              row << r.send(rf)
-            end 
-            unless material.nil? || material.empty?
-              material.each do |m|
-  			        row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
-  			      end
-  			    else
-  			      row << ""
-  			    end    
-          end
-        end
-  		  if referrals.length < @job.referrer_count.to_i
-  		    leftover = @job.referrer_count.to_i - referrals.length
-    	    i = 0
-  			  until i == leftover  do
-  			    @referral_fields.each do |rf|
-  		        row << ""
+      chunk_count = 0
+      @job_applications.each_slice(700) do |chunk|  
+        chunk_count += 1
+        csv_string = FasterCSV.generate do |csv| 
+          # header row 
+          csv << @columns
+          # data rows 
+          chunk.each do |ja|
+            row = []
+            @applicant_fields.each do |af|
+              row << ja.applicant.send(af)
             end
-  		      row << ""
-  			    i += 1
-  			  end  
-        end  
-        @statuses.each do |s|
-          row << ja.send(s)
-        end
-        @job_application_materials = ja.job_application_materials.find :all, :include => [:attachments]
-        unless @job_application_materials.nil? || @job_application_materials.blank?
-    	    @materials.each do |amt|
-    			  @job_application_materials.each do |jam|
-      			  material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})
-      			  unless material.nil? || material.empty?
-      			    material.each do |m|
-      			      row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
-      			    end 
-      			  else
-      			    row << ""
-      			  end   
-    		    end
-    			end
-    			@job_application_materials.each do |jam|
-    			  material = Attachment.find(:all, :conditions => ["container_id = ? and description LIKE 'Additional:%'", jam.id])
-    			  additional = ""
-    			  unless material.nil? || material.empty?
-    			    material.each do |m|
-    			      additional += url_for(:controller => 'attachments', :action => 'show', :id => m.id) + ", "
+            @custom.each do |c| 
+              if ja.submission_status == "Not Submitted"
+    		        row << "" 
+    			    else
+                value = ja.custom_values.detect{|cv| cv.custom_field.name == c}
+                if show_value(value).blank?
+  		            row << ""  
+  				      else
+  				        row << show_value(value)
+  				      end
+              end  
+            end
+            referrals = ja.job_application_referrals.find :all, :include => [:attachments]
+            if referrals.empty?
+    		      @referral_fields_cols.each do |rfc|
+    			      row << ""
+        	    end
+    		    else
+              referrals.each do |r|
+                material = Attachment.find(:all, :conditions => {:container_id => r.id, :container_type => "JobApplicationReferral"})
+                @referral_fields.each do |rf|  
+                  row << r.send(rf)
+                end 
+                unless material.nil? || material.empty?
+                  material.each do |m|
+  			            row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+  			          end
+  			        else
+  			          row << ""
+  			        end    
+              end
+            end
+  		      if referrals.length < @job.referrer_count.to_i
+  		        leftover = @job.referrer_count.to_i - referrals.length
+    	        i = 0
+  			      until i == leftover  do
+  			        @referral_fields.each do |rf|
+  		            row << ""
+                end
+  		          row << ""
+  			        i += 1
+  			      end  
+            end  
+            @statuses.each do |s|
+              row << ja.send(s)
+            end
+            @job_application_materials = ja.job_application_materials.find :all, :include => [:attachments]
+            unless @job_application_materials.nil? || @job_application_materials.blank?
+    	        @materials.each do |amt|
+    			      @job_application_materials.each do |jam|
+      			      material = Attachment.find(:all, :conditions => {:container_id => jam.id, :description => amt})
+      			      unless material.nil? || material.empty?
+      			        material.each do |m|
+      			          row << url_for(:controller => 'attachments', :action => 'show', :id => m.id)
+      			        end 
+      			      else
+      			        row << ""
+      			      end   
+    		        end
     			    end
-    			    row << additional
-    			  else
-    			    row << ""
-    			  end
-    			end
-    		end
-        csv << row
-      end 
-    end 
+    			    @job_application_materials.each do |jam|
+    			      material = Attachment.find(:all, :conditions => ["container_id = ? and description LIKE 'Additional:%'", jam.id])
+    			      additional = ""
+    			      unless material.nil? || material.empty?
+    			        material.each do |m|
+    			          additional += url_for(:controller => 'attachments', :action => 'show', :id => m.id) + ", "
+    			        end
+    			        row << additional
+    			      else
+    			        row << ""
+    			      end
+    			    end
+    		    end
+            csv << row
+          end 
+        end 
 
-    # send it to the zip file
+        # send it to the zip file
+        zipfile.get_output_stream("#{@file_name}-#{chunk_count}-applicants.csv") do |f|
+          f.write(csv_string)
+        end    
+        #send_data csv_string, 
+        #        :type => 'text/html; charset=iso-8859-1; header=present', 
+        #        :disposition => "attachment; filename=#{@file_name}-#{chunk_count}-applicants.csv"
     
-    zipfile.get_output_stream("#{@file_name}-#{chunk_count}-applicants.csv") do |f|
-      f.write(csv_string)
-    end
-    
-    #send_data csv_string, 
-    #        :type => 'text/html; charset=iso-8859-1; header=present', 
-    #        :disposition => "attachment; filename=#{@file_name}-#{chunk_count}-applicants.csv"
-    
-    #end each_slice        
-    end 
+      #end each_slice        
+      end 
     #end zipfile open
     end  
     
