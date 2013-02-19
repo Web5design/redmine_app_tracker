@@ -60,7 +60,7 @@ class JobsController < ApplicationController
     @job_attachment = job_attachments
     
     #for large CSV exports
-    @job_app_slices = @job.job_applications.each_slice(200).to_a.length
+    @job_app_slices = @job.job_applications.each_slice(400).to_a.length
     
     respond_to do |format|
       format.html #show.html.erb
