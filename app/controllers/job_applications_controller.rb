@@ -230,6 +230,15 @@ class JobApplicationsController < ApplicationController
           i = 1
           materials.each do |amt|
             unless params[:attachments].nil? || params[:attachments][i.to_s].nil? || params[:attachments][i.to_s]['file'].nil?
+              
+              #if uploading a material type that already has a document, overwrite old version
+              @job_application_materials.each do |jam|
+          		  jam.attachments.each do |jam_file|
+          		    if jam_file.description == amt
+                    jam_file.destroy
+                  end
+          		  end  
+          	  end
               params[:attachments][i.to_s]['description'] = amt
             end  
             i = i + 1
@@ -242,7 +251,6 @@ class JobApplicationsController < ApplicationController
           attachments = Attachment.attach_files(@job_application_material, params[:attachments])
           render_attachment_warning_if_needed(@job_application_material)    
         
-          @job_application_materials = @job_application.job_application_materials.find :all, :include => [:attachments]
           uploaded = Array.new
           @job_application_materials.each do |jam|
       		  jam.attachments.each do |jam_file|
