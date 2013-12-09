@@ -275,7 +275,7 @@ class JobApplicationsController < ApplicationController
         else
           if @applicant.email == User.current.mail
             #Send Notification
-            Notification.deliver_application_updated(@job_application)
+            #Notification.deliver_application_updated(@job_application)
           end  
           # no errors, redirect with success message
           if(User.current.admin? || @job_application.job.is_manager?)
