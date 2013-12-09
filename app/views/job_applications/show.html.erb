@@ -7,9 +7,9 @@
 
 <p>	
 <% if (@job_application.job.submission_date > DateTime.now && User.current.mail == @applicant.email) %>
-  <%= link_to 'Edit Application', edit_job_application_url(@job_application.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %><br /><br />
+  <%= link_to 'Edit Application', edit_job_application_url(@job_application.id, :apptracker_id => @job_application.apptracker_id), :class => 'icon icon-edit' %><br /><br />
 <% elsif User.current.admin? || @job_application.job.is_manager? %>
-  <%= link_to 'Edit Application and Add Notes/Comments', edit_job_application_url(@job_application.id, :apptracker_id => params[:apptracker_id]), :class => 'icon icon-edit' %><br /><br />
+  <%= link_to 'Edit Application and Add Notes/Comments', edit_job_application_url(@job_application.id, :apptracker_id => @job_application.apptracker_id), :class => 'icon icon-edit' %><br /><br />
 <% end %>
 Job Title: <%= link_to Job.find(@job_application.job_id).title, job_path(@job_application.job_id, :apptracker_id => @job_application.apptracker_id) %><br />
 
